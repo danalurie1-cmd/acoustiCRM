@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcoustiSkin CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+    .sidebar { width: 280px; }
+    .main-content { flex-grow: 1; }
+    .app-header { box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .input-group label { font-weight: 500; font-size: 0.875rem; color: #4b5563; margin-bottom: 0.25rem; display: block; }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;
+    }
+    .collapse-icon { transition: transform 0.3s ease-in-out; }
+    .calendar-day { min-height: 80px; }
+    .task-item { padding: 0.5rem; background: #eff6ff; border: 1px solid #dbeafe; border-radius: 0.375rem; margin-bottom: 0.25rem; font-size: 0.75rem; cursor: move; }
+    .kanban-column { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; min-height: 24rem; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen antialiased flex">
+  <div id="notification" class="fixed top-4 right-4 z-50 p-3 hidden rounded-lg shadow-xl text-sm font-medium transition-all duration-300" role="alert"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar bg-indigo-700 text-white flex flex-col h-screen fixed">
+    <div class="p-6 text-2xl font-bold border-b border-indigo-600">AcoustiSkin CRM</div>
+    <div class="p-6 flex-grow overflow-y-auto">
+      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Navigation</h3>
+      <nav class="space-y-1">
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="dashboard-view">
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+          Dashboard
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="customers-view">
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+          Customers
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="orders-view">
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 4h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          Orders
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="calendar-view">
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          Calendar
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="pipeline-view">
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+          Pipeline
+        </a>
+      </nav>
+      <button id="newCustomerButton" class="w-full mt-6 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
+        + New Customer
+      </button>
+    </div>
+    <div class="p-6 border-t border-indigo-600">
+      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Customers</h3>
+      <ul id="customerList" class="space-y-1 max-h-64 overflow-y-auto">
+        <li class="p-3 text-center text-gray-400">Loading...</li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content flex flex-col ml-72 w-full">
+    <header class="app-header bg-white p-4 flex justify-between items-center sticky top-0 z-10">
+      <h1 class="text-xl font-bold text-gray-800">Customer: <span id="currentCustomerName" class="text-indigo-600">Select Customer</span></h1>
+      <div class="flex items-center space-x-4">
+        <button id="backToDashboard" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+          Back to Dashboard
+        </button>
+        <button id="editCustomerButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+          Edit Profile
+        </button>
+      </div>
+    </header>
+
+    <!-- Views -->
+    <div id="dashboard-view" class="app-view p-6"></div>
+    <div id="customers-view" class="app-view p-6 hidden"></div>
+    <div id="orders-view" class="app-view p-6 hidden"></div>
+    <div id="calendar-view" class="app-view p-6 hidden"></div>
+    <div id="pipeline-view" class="app-view p-6 hidden"></div>
+  </main>
+
+  <script type="module">
+    const MOCK_MODE = true;
+    let activeCustomer = null;
+    let customers = [];
+    let appointments = [];
+    let tasks = [];
+    let orderItems = [];
+    let pipelineDeals = [];
+
+    function initMockData() {
+      customers = [
+        { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, ST 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp' },
+        { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin' }
+      ];
+      appointments = [
+        { id: 'APPT-001', customerId: 'CUST-001', title: 'Q4 Review Call', date: '2025-11-20', time: '14:00', type: 'Call', notes: 'Discuss renewal and upsell' },
+        { id: 'APPT-002', customerId: 'CUST-002', title: 'Product Demo', date: '2025-11-25', time: '10:00', type: 'Demo', notes: 'Show new skincare line' }
+      ];
+      tasks = [
+        { id: 'TASK-001', customerId: 'CUST-001', title: 'Send contract', due: '2025-11-18', status: 'Pending' },
+        { id: 'TASK-002', customerId: 'CUST-002', title: 'Follow up on demo', due: '2025-11-26', status: 'Pending' }
+      ];
+      pipelineDeals = [
+        { id: 'DEAL-001', customerId: 'CUST-002', name: 'Initial Order - 100 Units', value: 2995, stage: 'Negotiation', probability: 70, closeDate: '2025-12-15' }
+      ];
+    }
+
+    function showNotification(msg, type = 'bg-blue-100 text-blue-700') {
+      const n = document.getElementById('notification');
+      n.textContent = msg;
+      n.className = `fixed top-4 right-4 z-50 p-3 rounded-lg shadow-xl text-sm font-medium ${type} transition-all duration-300`;
+      n.classList.remove('hidden');
+      setTimeout(() => n.classList.add('hidden'), 4000);
+    }
+
+    function navigateTo(view) {
+      document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
+      document.getElementById(view)?.classList.remove('hidden');
+      document.getElementById('editCustomerButton')?.classList[view === 'customers-view' ? 'remove' : 'add']('hidden');
+      document.getElementById('backToDashboard')?.classList[view === 'dashboard-view' ? 'add' : 'remove']('hidden');
+      if (view === 'dashboard-view') renderDashboard();
+      if (view === 'customers-view') renderCustomers();
+      if (view === 'orders-view' && activeCustomer) renderOrderForm();
+      if (view === 'calendar-view') renderCalendar();
+      if (view === 'pipeline-view') renderPipeline();
+    }
+
+    function renderCustomerList() {
+      const list = document.getElementById('customerList');
+      list.innerHTML = customers.map(c => `
+        <li class="customer-item p-3 cursor-pointer hover:bg-indigo-600 rounded-lg text-sm ${activeCustomer?.id === c.id ? 'bg-indigo-600' : ''}" data-customer-id="${c.id}">
+          ${c.name}
+        </li>`).join('');
+      document.querySelectorAll('.customer-item').forEach(item => {
+        item.onclick = () => {
+          document.querySelectorAll('.customer-item').forEach(i => i.classList.remove('bg-indigo-600'));
+          item.classList.add('bg-indigo-600');
+          activeCustomer = customers.find(c => c.id === item.dataset.customerId);
+          document.getElementById('currentCustomerName').textContent = activeCustomer.name;
+          updateCustomerStatusUI(activeCustomer.status);
+          navigateTo('dashboard-view');
+        };
+      });
+    }
+
+    function updateCustomerStatusUI(status) {
+      const bar = document.createElement('div');
+      bar.id = 'customerStatusBar';
+      bar.className = `mx-6 mt-4 p-2 font-semibold text-sm rounded-lg ${status === 'Active Customer' ? 'bg-green-100 text-green-700' : status === 'Prospect' ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-800'}`;
+      bar.textContent = `Status: ${status || 'N/A'}`;
+      const existing = document.getElementById('customerStatusBar');
+      if (existing) existing.replaceWith(bar);
+      else document.querySelector('main').insertBefore(bar, document.querySelector('.app-view'));
+    }
+
+    function renderDashboard() {
+      const view = document.getElementById('dashboard-view');
+      if (!activeCustomer) {
+        view.innerHTML = `<div class="text-center text-gray-500 mt-20">Select a customer to view dashboard</div>`;
+        return;
+      }
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">${activeCustomer.name} - Dashboard</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Lifetime Value</h3>
+              <p class="text-2xl font-bold text-indigo-600">${activeCustomer.clv}</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Last Purchase</h3>
+              <p class="text-lg">${activeCustomer.lastPurchase || 'N/A'}</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Next Task</h3>
+              <p class="text-lg">${activeCustomer.nextTask || 'None'}</p>
+            </div>
+          </div>
+          <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold mb-4">Upcoming Appointments</h3>
+              <div id="upcomingAppointments"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold mb-4">Pending Tasks</h3>
+              <div id="pendingTasks"></div>
+            </div>
+          </div>
+        </div>`;
+      renderUpcomingAppointments();
+      renderPendingTasks();
+    }
+
+    function renderUpcomingAppointments() {
+      const container = document.getElementById('upcomingAppointments');
+      const appts = appointments.filter(a => a.customerId === activeCustomer.id && new Date(a.date) >= new Date());
+      container.innerHTML = appts.length ? appts.map(a => `
+        <div class="flex justify-between items-center p-2 bg-blue-50 rounded mb-2">
+          <div>
+            <p class="font-medium">${a.title}</p>
+            <p class="text-xs text-gray-600">${a.date} ${a.time}</p>
+          </div>
+          <button class="text-xs text-indigo-600 hover:underline" onclick="showNotification('Edit coming soon')">Edit</button>
+        </div>`).join('') : '<p class="text-gray-500">No upcoming appointments</p>';
+    }
+
+    function renderPendingTasks() {
+      const container = document.getElementById('pendingTasks');
+      const tasksList = tasks.filter(t => t.customerId === activeCustomer.id && t.status === 'Pending');
+      container.innerHTML = tasksList.length ? tasksList.map(t => `
+        <div class="flex justify-between items-center p-2 bg-yellow-50 rounded mb-2">
+          <div>
+            <p class="font-medium">${t.title}</p>
+            <p class="text-xs text-gray-600">Due: ${t.due}</p>
+          </div>
+          <button class="text-xs text-indigo-600 hover:underline" onclick="showNotification('Task completed!')">Done</button>
+        </div>`).join('') : '<p class="text-gray-500">No pending tasks</p>';
+    }
+
+    function renderCustomers() {
+      const view = document.getElementById('customers-view');
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Customer Profile</h2>
+          ${activeCustomer ? renderCustomerForm() : '<p class="text-center text-gray-500">Select a customer</p>'}
+        </div>`;
+    }
+
+    function renderCustomerForm() {
+      return `
+        <form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="input-group">
+              <label>Company Name *</label>
+              <input type="text" name="name" value="${activeCustomer.name}" required>
+            </div>
+            <div class="input-group">
+              <label>Email *</label>
+              <input type="email" name="email" value="${activeCustomer.email}" required>
+            </div>
+            <div class="input-group">
+              <label>Phone</label>
+              <input type="tel" name="phone" value="${activeCustomer.phone}">
+            </div>
+            <div class="input-group">
+              <label>Status</label>
+              <select name="status" onchange="updateCustomerStatusUI(this.value)">
+                <option ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
+                <option ${activeCustomer.status === 'Active Customer' ? 'selected' : ''}>Active Customer</option>
+              </select>
+            </div>
+            <div class="input-group col-span-2">
+              <label>Address</label>
+              <input type="text" name="address" value="${activeCustomer.address}">
+            </div>
+            <div class="input-group">
+              <label>Industry</label>
+              <input type="text" name="industry" value="${activeCustomer.industry}">
+            </div>
+            <div class="input-group">
+              <label>Website</label>
+              <input type="url" name="website" value="${activeCustomer.website}">
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button type="button" id="saveCustomerBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg">
+              Save Changes
+            </button>
+          </div>
+        </form>`;
+    }
+
+    function renderOrderForm() {
+      const view = document.getElementById('orders-view');
+      orderItems = [];
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">New Order - ${activeCustomer.name}</h2>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4 border-b pb-2">Order Items</h3>
+              <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="input-group">
+                    <label>Product</label>
+                    <input type="text" id="orderProduct" placeholder="e.g. Team Jersey">
+                  </div>
+                  <div class="input-group">
+                    <label>Size</label>
+                    <select id="orderSize">
+                      <option>S</option><option>M</option><option>L</option><option>XL</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Color</label>
+                    <select id="orderColor">
+                      <option>Black</option><option>Team Blue</option><option>Red</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="input-group">
+                    <label>Customization</label>
+                    <input type="text" id="orderCustom" placeholder="Name/Number">
+                  </div>
+                  <div class="input-group">
+                    <label>Quantity</label>
+                    <input type="number" id="orderQty" value="1" min="1">
+                  </div>
+                  <div class="input-group">
+                    <label>Price</label>
+                    <input type="number" id="orderPrice" step="0.01" placeholder="29.95">
+                  </div>
+                </div>
+                <button id="addOrderItem" class="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-lg">
+                  Add Item
+                </button>
+              </div>
+              <div id="orderItemsList" class="mt-6 space-y-2"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4 border-b pb-2">Summary</h3>
+              <div id="orderSummary" class="space-y-2"></div>
+              <button id="processOrderBtn" class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-extrabold py-3 rounded-lg">
+                PROCESS ORDER
+              </button>
+            </div>
+          </div>
+        </div>`;
+      attachOrderListeners();
+    }
+
+    function attachOrderListeners() {
+      document.getElementById('addOrderItem')?.addEventListener('click', () => {
+        const product = document.getElementById('orderProduct').value;
+        const size = document.getElementById('orderSize').value;
+        const color = document.getElementById('orderColor').value;
+        const custom = document.getElementById('orderCustom').value;
+        const qty = parseInt(document.getElementById('orderQty').value) || 1;
+        const price = parseFloat(document.getElementById('orderPrice').value) || 0;
+        if (product && price > 0) {
+          orderItems.push({ product, size, color, custom, qty, price: price * qty });
+          document.getElementById('orderProduct').value = '';
+          document.getElementById('orderCustom').value = '';
+          document.getElementById('orderPrice').value = '';
+          updateOrderDisplay();
+        }
+      });
+      document.getElementById('processOrderBtn')?.addEventListener('click', () => {
+        if (orderItems.length === 0) {
+          showNotification('Add items first!', 'bg-red-100 text-red-700');
+          return;
+        }
+        showNotification(`Order processed! Total: $${orderItems.reduce((s,i)=>s+i.price,0).toFixed(2)}`, 'bg-green-100 text-green-700');
+        orderItems = [];
+        renderOrderForm();
+      });
+    }
+
+    function updateOrderDisplay() {
+      const list = document.getElementById('orderItemsList');
+      list.innerHTML = orderItems.map((item, i) => `
+        <div class="p-3 bg-gray-50 rounded flex justify-between">
+          <div>
+            <p class="font-medium">${item.qty}x ${item.product} (${item.size}, ${item.color})</p>
+            ${item.custom ? `<p class="text-xs text-gray-600">Custom: ${item.custom}</p>` : ''}
+          </div>
+          <p class="font-medium">$${item.price.toFixed(2)}</p>
+        </div>`).join('');
+      const total = orderItems.reduce((s,i)=>s+i.price,0);
+      document.getElementById('orderSummary').innerHTML = `
+        <div class="flex justify-between"><span>Subtotal:</span><span>$${total.toFixed(2)}</span></div>
+        <div class="flex justify-between font-bold text-lg mt-2"><span>Total:</span><span class="text-indigo-600">$${total.toFixed(2)}</span></div>`;
+    }
+
+    function renderCalendar() {
+      const view = document.getElementById('calendar-view');
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      let html = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Calendar - ${today.toLocaleString('default', { month: 'long' })} ${year}</h2>
+          <div class="grid grid-cols-7 gap-2 text-center font-semibold text-sm">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+          </div>
+          <div class="grid grid-cols-7 gap-2 mt-2">`;
+      for (let i = 0; i < firstDay; i++) html += `<div></div>`;
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const dayAppts = appointments.filter(a => a.date === dateStr);
+        const dayTasks = tasks.filter(t => t.due === dateStr);
+        html += `
+          <div class="border rounded-lg p-2 min-h-24 bg-white ${day === today.getDate() ? 'ring-2 ring-indigo-600' : ''}">
+            <div class="font-semibold text-sm">${day}</div>
+            ${dayAppts.map(a => `<div class="text-xs bg-blue-100 p-1 rounded mt-1">${a.title}</div>`).join('')}
+            ${dayTasks.map(t => `<div class="text-xs bg-yellow-100 p-1 rounded mt-1">${t.title}</div>`).join('')}
+          </div>`;
+      }
+      html += `</div></div>`;
+      view.innerHTML = html;
+    }
+
+    function renderPipeline() {
+      const view = document.getElementById('pipeline-view');
+      const stages = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Sales Pipeline</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            ${stages.map(stage => {
+              const deals = pipelineDeals.filter(d => d.stage === stage);
+              return `
+                <div class="kanban-column">
+                  <h3 class="font-bold text-center mb-3">${stage} (${deals.length})</h3>
+                  ${deals.map(deal => {
+                    const cust = customers.find(c => c.id === deal.customerId);
+                    return `<div class="bg-white p-3 rounded shadow mb-3 cursor-move">
+                      <p class="font-medium">${cust?.name || 'Unknown'}</p>
+                      <p class="text-sm">${deal.name}</p>
+                      <p class="font-bold text-indigo-600">$${deal.value}</p>
+                    </div>`;
+                  }).join('')}
+                </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+    }
+
+    function setupEventListeners() {
+      document.getElementById('newCustomerButton')?.addEventListener('click', () => {
+        const id = 'CUST-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+        activeCustomer = { id, name: 'New Customer', email: '', phone: '', status: 'Prospect', industry: '', revenue: '', employees: '', address: '', website: '', leadSource: '', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: null, nextTask: '', nps: null, social: [], handle: '' };
+        customers.push(activeCustomer);
+        renderCustomerList();
+        navigateTo('customers-view');
+      });
+      document.getElementById('editCustomerButton')?.addEventListener('click', () => navigateTo('customers-view'));
+      document.getElementById('backToDashboard')?.addEventListener('click', () => navigateTo('dashboard-view'));
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', e => {
+          e.preventDefault();
+          navigateTo(link.dataset.view);
+        });
+      });
+      document.getElementById('customerForm')?.addEventListener('submit', e => e.preventDefault());
+      document.getElementById('saveCustomerBtn')?.addEventListener('click', () => {
+        const form = document.getElementById('customerForm');
+        const data = {};
+        form.querySelectorAll('input, select').forEach(f => {
+          if (f.name) data[f.name] = f.value;
+        });
+        Object.assign(activeCustomer, data);
+        showNotification('Customer saved!', 'bg-green-100 text-green-700');
+        renderCustomerList();
+        navigateTo('dashboard-view');
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initMockData();
+      renderCustomerList();
+      setupEventListeners();
+      navigateTo('dashboard-view');
+    });
+  </script>
+</body>
+</html>

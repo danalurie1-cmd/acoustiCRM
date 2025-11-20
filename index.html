@@ -1,197 +1,2804 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AcoustiSkin CRM Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background: #f3f4f6; overflow: hidden; }
-        .sidebar { width: 260px; background: #1e1b4b; color: white; display: flex; flex-direction: column; height: 100vh; }
-        .nav-item { padding: 10px 20px; cursor: pointer; color: #a5b4fc; display: flex; align-items: center; transition: 0.2s; }
-        .nav-item:hover, .nav-item.active { background: #312e81; color: white; }
-        .nav-item.active { border-left: 4px solid #818cf8; font-weight: 600; }
-        .main-content { flex: 1; height: 100vh; overflow-y: auto; padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .kanban-col { min-width: 280px; background: #e5e7eb; padding: 10px; border-radius: 8px; height: 100%; }
-        .kanban-card { background: white; padding: 10px; margin-bottom: 10px; border-radius: 4px; border-top: 3px solid #4f46e5; cursor: pointer; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 50; }
-        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 400px; max-width: 90%; }
-        .hidden { display: none; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcoustiSkin CRM - AI-Powered Enterprise Edition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      min-height: 100vh;
+    }
+    .sidebar { 
+      width: 260px; 
+      background: linear-gradient(180deg, #4a7c59 0%, #2e5940 100%);
+      box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+    }
+    .main-content { margin-left: 260px; min-height: 100vh; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(67, 160, 71, 0.4);
+    }
+    .btn-secondary {
+      background: white;
+      color: #43a047;
+      border: 2px solid #43a047;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    .btn-secondary:hover {
+      background: #43a047;
+      color: white;
+    }
+    .btn-danger {
+      background: white;
+      color: #e53935;
+      border: 2px solid #e53935;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    .btn-danger:hover {
+      background: #e53935;
+      color: white;
+    }
+    .nav-item {
+      padding: 12px 20px;
+      color: white;
+      cursor: pointer;
+      border-radius: 8px;
+      margin: 5px 10px;
+      transition: all 0.3s;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255,255,255,0.2);
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      overflow-y: auto;
+    }
+    .modal-content {
+      background: white;
+      margin: 30px auto;
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 1100px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #2e5940;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #c8e6c9;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #66bb6a;
+    }
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .checkbox-item input[type="checkbox"] {
+      width: auto;
+      cursor: pointer;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+    .calendar-day {
+      background: white;
+      border: 2px solid #e8f5e9;
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 120px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .calendar-day:hover {
+      background: #f1f8e9;
+      border-color: #66bb6a;
+      transform: translateY(-2px);
+    }
+    .calendar-day.today {
+      border-color: #43a047;
+      background: #e8f5e9;
+      box-shadow: 0 0 10px rgba(67, 160, 71, 0.3);
+    }
+    .event-item {
+      background: #66bb6a;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      margin-top: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .event-item:hover {
+      background: #43a047;
+      transform: scale(1.05);
+    }
+    .holiday-item {
+      background: #ff6b6b;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-active { background: #c8e6c9; color: #2e7d32; }
+    .status-prospect { background: #bbdefb; color: #1565c0; }
+    .status-inactive { background: #ffcdd2; color: #c62828; }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-left: 4px solid #66bb6a;
+      display: none;
+      z-index: 2000;
+      animation: slideIn 0.3s;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table th {
+      background: #e8f5e9;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #2e5940;
+    }
+    .table td {
+      padding: 12px;
+      border-bottom: 1px solid #e8f5e9;
+    }
+    .table tr:hover {
+      background: #f1f8e9;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 15px;
+    }
+    .section-header {
+      color: #2e5940;
+      margin: 25px 0 15px 0;
+      border-bottom: 2px solid #e8f5e9;
+      padding-bottom: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ai-badge {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .score-badge {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .score-high { background: #c8e6c9; color: #2e7d32; }
+    .score-medium { background: #fff9c4; color: #f57f17; }
+    .score-low { background: #ffcdd2; color: #c62828; }
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 15px 0;
+      font-size: 13px;
+    }
+  </style>
 </head>
-<body class="flex">
+<body>
+  <!-- Notification -->
+  <div id="notification" class="notification">
+    <i class="fas fa-check-circle" style="color: #66bb6a; margin-right: 8px;"></i>
+    <span id="notificationText"></span>
+  </div>
 
-<aside class="sidebar">
-    <div class="p-5 border-b border-indigo-900 font-bold text-lg flex items-center gap-2">
-        <div class="bg-indigo-500 w-8 h-8 rounded flex items-center justify-center">AS</div> AcoustiSkin
+  <!-- Sidebar -->
+  <aside class="sidebar" style="position: fixed; height: 100vh; overflow-y: auto;">
+    <div style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+      <h1 style="color: white; font-size: 20px; font-weight: 700;">
+        <i class="fas fa-leaf"></i> AcoustiSkin CRM
+      </h1>
+      <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 5px;">
+        <span class="ai-badge"><i class="fas fa-brain"></i> AI-Powered</span>
+      </div>
     </div>
-    <div class="flex-1 overflow-y-auto py-2">
-        <div class="px-5 py-2 text-xs font-bold text-indigo-400 uppercase">Core</div>
-        <div onclick="nav('dashboard')" class="nav-item active" id="btn-dashboard"><i class="fa fa-chart-pie w-6"></i> Dashboard</div>
-        <div onclick="nav('customers')" class="nav-item" id="btn-customers"><i class="fa fa-users w-6"></i> Customers</div>
-        <div onclick="nav('new-order')" class="nav-item" id="btn-new-order"><i class="fa fa-cart-plus w-6"></i> New Order</div>
-        <div onclick="nav('tracking')" class="nav-item" id="btn-tracking"><i class="fa fa-truck w-6"></i> Order Tracking</div>
-        <div onclick="nav('calendar')" class="nav-item" id="btn-calendar"><i class="fa fa-calendar w-6"></i> Calendar</div>
-        <div onclick="nav('pipeline')" class="nav-item" id="btn-pipeline"><i class="fa fa-filter w-6"></i> Pipeline</div>
-        <div onclick="nav('reports')" class="nav-item" id="btn-reports"><i class="fa fa-chart-line w-6"></i> Reports</div>
-        <div onclick="nav('vendors')" class="nav-item" id="btn-vendors"><i class="fa fa-briefcase w-6"></i> Vendors</div>
+    
+    <nav style="padding: 20px 0;">
+      <div class="nav-item active" onclick="showView('dashboard')">
+        <i class="fas fa-home" style="margin-right: 10px;"></i>Dashboard
+      </div>
+      <div class="nav-item" onclick="showView('customers')">
+        <i class="fas fa-users" style="margin-right: 10px;"></i>Customers
+      </div>
+      <div class="nav-item" onclick="showView('orders')">
+        <i class="fas fa-shopping-cart" style="margin-right: 10px;"></i>Orders
+      </div>
+      <div class="nav-item" onclick="showView('calendar')">
+        <i class="fas fa-calendar" style="margin-right: 10px;"></i>Calendar
+      </div>
+      <div class="nav-item" onclick="showView('pipeline')">
+        <i class="fas fa-chart-line" style="margin-right: 10px;"></i>Pipeline
+      </div>
+      <div class="nav-item" onclick="showView('analytics')">
+        <i class="fas fa-chart-bar" style="margin-right: 10px;"></i>Analytics
+      </div>
+      <div class="nav-item" onclick="showView('marketing')">
+        <i class="fas fa-bullhorn" style="margin-right: 10px;"></i>Marketing
+      </div>
+      <div class="nav-item" onclick="showView('referrals')">
+        <i class="fas fa-gift" style="margin-right: 10px;"></i>Referral Program
+      </div>
+    </nav>
+
+    <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+      <button class="btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="openCustomerModal()">
+        <i class="fas fa-plus"></i> New Customer
+      </button>
+      <button class="btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="openEventModal()">
+        <i class="fas fa-calendar-plus"></i> Schedule Event
+      </button>
+      <button class="btn-primary" style="width: 100%;" onclick="openOrderModal()">
+        <i class="fas fa-cart-plus"></i> New Order
+      </button>
+      
+      <div style="margin-top: 20px;">
+        <button class="btn-secondary" style="width: 100%; margin-bottom: 10px;" onclick="exportData()">
+          <i class="fas fa-download"></i> Export Data
+        </button>
+        <button class="btn-secondary" style="width: 100%;" onclick="document.getElementById('importFile').click()">
+          <i class="fas fa-upload"></i> Import Data
+        </button>
+        <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(event)">
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" style="padding: 30px;">
+    <!-- Dashboard View -->
+    <div id="dashboard-view" class="view-content">
+      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">
+        AI-Powered Dashboard <span class="ai-badge"><i class="fas fa-sparkles"></i> Smart Insights</span>
+      </h2>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div class="card" style="background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">Total Customers</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="totalCustomers">0</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-arrow-up"></i> Active accounts</div>
+        </div>
         
-        <div class="px-5 py-2 mt-4 text-xs font-bold text-indigo-400 uppercase">Actions</div>
-        <div class="px-4 space-y-2">
-            <button onclick="openModal('customer')" class="w-full text-left px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded"> + New Customer</button>
-            <button onclick="openModal('vendor')" class="w-full text-left px-3 py-2 bg-indigo-800 hover:bg-indigo-700 text-indigo-100 text-sm rounded"> + New Vendor</button>
-            <button onclick="openModal('task')" class="w-full text-left px-3 py-2 bg-indigo-900 hover:bg-indigo-800 text-indigo-200 text-sm rounded"> + Quick Task</button>
+        <div class="card" style="background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">Total Orders</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="totalOrders">0</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-shopping-bag"></i> Completed</div>
         </div>
-        <div class="px-4 mt-4 flex gap-2">
-            <button onclick="exportData()" class="flex-1 bg-slate-600 text-xs py-1 rounded text-white">Export</button>
-            <button onclick="resetData()" class="flex-1 bg-red-800 text-xs py-1 rounded text-white">Reset</button>
+        
+        <div class="card" style="background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">Revenue</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="totalRevenue">$0</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-dollar-sign"></i> This month</div>
         </div>
-    </div>
-    <div class="p-4 bg-indigo-950">
-        <div class="text-xs text-indigo-400 font-bold mb-1">ADDRESS BOOK</div>
-        <input id="search" onkeyup="renderAddr()" placeholder="Search..." class="w-full bg-indigo-900 border-none text-white text-sm p-2 rounded mb-2">
-        <div id="addrList" class="h-24 overflow-y-auto text-sm text-indigo-200"></div>
-    </div>
-</aside>
+        
+        <div class="card" style="background: linear-gradient(135deg, #ab47bc 0%, #8e24aa 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">Referral Rate</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="referralRate">0%</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-users"></i> Willing to refer</div>
+        </div>
+      </div>
 
-<main class="main-content">
-    <header class="flex justify-between items-center mb-6">
-        <h2 id="pageTitle" class="text-2xl font-bold text-gray-800">Dashboard</h2>
-        <div id="ctxBadge" class="hidden items-center bg-white px-3 py-1 rounded-full shadow text-sm">
-            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span> Active: <b id="ctxName" class="ml-1 text-indigo-700">Name</b>
-            <span onclick="setCtx(null)" class="ml-3 cursor-pointer text-gray-400 hover:text-red-500">x</span>
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px; font-size: 18px;">
+            <i class="fas fa-bolt"></i> AI Insights & Recommendations
+          </h3>
+          <div id="aiInsights"></div>
         </div>
-    </header>
-    <div id="view-container"></div>
-</main>
+        
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px; font-size: 18px;">Today's Tasks</h3>
+          <div id="todayTasks"></div>
+        </div>
+      </div>
+    </div>
 
-<div id="modal" class="modal">
+    <!-- Customers View -->
+    <div id="customers-view" class="view-content" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 28px; color: #2e5940;">Customers</h2>
+        <button class="btn-primary" onclick="openCustomerModal()">
+          <i class="fas fa-plus"></i> Add Customer
+        </button>
+      </div>
+      
+      <div class="card">
+        <div style="margin-bottom: 15px;">
+          <input type="text" id="searchCustomers" placeholder="Search customers..." 
+                 style="width: 100%; padding: 10px; border: 2px solid #c8e6c9; border-radius: 6px;"
+                 oninput="filterCustomers()">
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="table" id="customersTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Lead Source</th>
+                <th>Status</th>
+                <th>AI Score</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders View -->
+    <div id="orders-view" class="view-content" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 28px; color: #2e5940;">Orders</h2>
+        <button class="btn-primary" onclick="openOrderModal()">
+          <i class="fas fa-plus"></i> New Order
+        </button>
+      </div>
+      
+      <div class="card">
+        <div style="overflow-x: auto;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar View -->
+    <div id="calendar-view" class="view-content" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 28px; color: #2e5940;" id="calendarTitle">Calendar</h2>
+        <div>
+          <button class="btn-secondary" onclick="changeMonth(-1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button class="btn-secondary" onclick="changeMonth(0)" style="margin: 0 10px;">Today</button>
+          <button class="btn-secondary" onclick="changeMonth(1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          <button class="btn-primary" onclick="openEventModal()" style="margin-left: 10px;">
+            <i class="fas fa-plus"></i> Add Event
+          </button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="calendar-grid" style="margin-bottom: 10px;">
+          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Sun</div>
+          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Mon</div>
+          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Tue</div>
+          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Wed</div>
+          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Thu</div>
+          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Fri</div>
+          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Sat</div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
+    </div>
+
+    <!-- Marketing View (NEW) -->
+    <div id="marketing-view" class="view-content" style="display: none;">
+      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">Marketing Intelligence</h2>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">Lead Sources</h3>
+          <canvas id="leadSourceChart"></canvas>
+        </div>
+        
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">Social Media Presence</h3>
+          <canvas id="socialMediaChart"></canvas>
+        </div>
+        
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">Referral Insights</h3>
+          <div id="referralInsights"></div>
+        </div>
+        
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">Discount Interest</h3>
+          <div id="discountInsights"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Referral Program View (NEW) -->
+    <div id="referrals-view" class="view-content" style="display: none;">
+      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">
+        <i class="fas fa-gift"></i> Referral Program Dashboard
+      </h2>
+      
+      <div class="info-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+        <strong><i class="fas fa-rocket"></i> Growth Hack Alert!</strong> Referral programs can increase customer acquisition by 300%! Track every referral and reward your advocates.
+      </div>
+
+      <!-- Referral Stats -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">Total Referrals</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="totalReferrals">0</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-users"></i> New customers</div>
+        </div>
+        
+        <div class="card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">Credits Issued</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="totalCredits">$0</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-dollar-sign"></i> In rewards</div>
+        </div>
+        
+        <div class="card" style="background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">Active Advocates</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="activeAdvocates">0</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-star"></i> Top referrers</div>
+        </div>
+        
+        <div class="card" style="background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">Conversion Rate</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="conversionRate">0%</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-chart-line"></i> Referred → Customer</div>
+        </div>
+      </div>
+
+      <!-- Top Referrers Leaderboard -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">
+            <i class="fas fa-trophy"></i> Top Referrers Leaderboard
+          </h3>
+          <div id="topReferrersList"></div>
+        </div>
+        
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">
+            <i class="fas fa-crown"></i> Reward Tiers
+          </h3>
+          <div style="padding: 15px;">
+            <div style="margin-bottom: 15px; padding: 12px; background: #f5f5f5; border-left: 4px solid #cd7f32; border-radius: 6px;">
+              <div style="font-weight: 600; color: #cd7f32;"><i class="fas fa-medal"></i> BRONZE (1-2 referrals)</div>
+              <div style="font-size: 13px; color: #666; margin-top: 5px;">• 10% credit on next purchase</div>
+              <div style="font-size: 13px; color: #666;">• Early access to new designs</div>
+            </div>
+            
+            <div style="margin-bottom: 15px; padding: 12px; background: #f5f5f5; border-left: 4px solid #c0c0c0; border-radius: 6px;">
+              <div style="font-weight: 600; color: #808080;"><i class="fas fa-medal"></i> SILVER (3-5 referrals)</div>
+              <div style="font-size: 13px; color: #666; margin-top: 5px;">• 15% credit on next purchase</div>
+              <div style="font-size: 13px; color: #666;">• Free shipping for life</div>
+              <div style="font-size: 13px; color: #666;">• Exclusive Silver designs</div>
+            </div>
+            
+            <div style="margin-bottom: 15px; padding: 12px; background: #f5f5f5; border-left: 4px solid #ffd700; border-radius: 6px;">
+              <div style="font-weight: 600; color: #b8860b;"><i class="fas fa-medal"></i> GOLD (6-10 referrals)</div>
+              <div style="font-size: 13px; color: #666; margin-top: 5px;">• 25% credit on next purchase</div>
+              <div style="font-size: 13px; color: #666;">• 2 FREE replacement skins/year</div>
+              <div style="font-size: 13px; color: #666;">• Custom design service</div>
+              <div style="font-size: 13px; color: #666;">• VIP support line</div>
+            </div>
+            
+            <div style="padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px;">
+              <div style="font-weight: 600;"><i class="fas fa-gem"></i> PLATINUM (11+ referrals)</div>
+              <div style="font-size: 13px; margin-top: 5px;">• FREE replacement skin EVERY year</div>
+              <div style="font-size: 13px;">• 50% off all purchases</div>
+              <div style="font-size: 13px;">• Lifetime warranty</div>
+              <div style="font-size: 13px;">• Brand ambassador status</div>
+              <div style="font-size: 13px;">• Featured on website</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Referrals -->
+      <div class="card" style="margin-top: 20px;">
+        <h3 style="color: #2e5940; margin-bottom: 15px;">
+          <i class="fas fa-history"></i> Recent Referrals
+        </h3>
+        <div style="overflow-x: auto;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Referrer</th>
+                <th>New Customer</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Credit Earned</th>
+              </tr>
+            </thead>
+            <tbody id="recentReferralsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pipeline View -->
+    <div id="pipeline-view" class="view-content" style="display: none;">
+      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">Sales Pipeline</h2>
+      <div id="pipelineContent"></div>
+    </div>
+
+    <!-- Analytics View -->
+    <div id="analytics-view" class="view-content" style="display: none;">
+      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">Analytics</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">Revenue Trend</h3>
+          <canvas id="revenueChart"></canvas>
+        </div>
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">Customer Status</h3>
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Enhanced Customer Modal -->
+  <div id="customerModal" class="modal">
     <div class="modal-content">
-        <div class="flex justify-between mb-4"><h3 id="mTitle" class="font-bold text-lg">Title</h3><button onclick="closeModal()">x</button></div>
-        <div id="mBody"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #2e5940; font-size: 22px;">
+          <span id="customerModalTitle">Add New Customer</span>
+          <span class="ai-badge"><i class="fas fa-brain"></i> AI-Enhanced</span>
+        </h3>
+        <button onclick="closeModal('customerModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+      </div>
+      
+      <div class="info-box">
+        <i class="fas fa-info-circle"></i> <strong>Pro Tip:</strong> Complete all fields for better AI insights and personalized marketing campaigns!
+      </div>
+      
+      <form id="customerForm" onsubmit="saveCustomer(event)">
+        <input type="hidden" id="customerId">
+        
+        <!-- Basic Contact Information -->
+        <div class="section-header">
+          <i class="fas fa-user"></i> Basic Information
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Company/Full Name *</label>
+            <input type="text" id="customerName" required placeholder="e.g., Bay Area Sports Team">
+          </div>
+          
+          <div class="form-group">
+            <label>Contact Person</label>
+            <input type="text" id="customerContact" placeholder="Primary contact name">
+          </div>
+          
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="customerEmail" required placeholder="email@example.com">
+          </div>
+          
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="customerPhone" placeholder="(555) 123-4567">
+          </div>
+          
+          <div class="form-group">
+            <label>Status</label>
+            <select id="customerStatus">
+              <option value="prospect">Prospect</option>
+              <option value="active">Active Customer</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Industry/Occupation</label>
+            <input type="text" id="customerIndustry" placeholder="e.g., Professional Sports">
+          </div>
+        </div>
+
+        <!-- Demographics & Location -->
+        <div class="section-header">
+          <i class="fas fa-map-marked-alt"></i> Demographics & Location
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Age Range</label>
+            <select id="customerAgeRange">
+              <option value="">Select Age Range</option>
+              <option value="18-24">18-24</option>
+              <option value="25-34">25-34</option>
+              <option value="35-44">35-44</option>
+              <option value="45-54">45-54</option>
+              <option value="55-64">55-64</option>
+              <option value="65+">65+</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" id="customerCity" placeholder="San Francisco">
+          </div>
+          
+          <div class="form-group">
+            <label>State</label>
+            <select id="customerState">
+              <option value="">Select State</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Billing Address</label>
+          <textarea id="customerBillingAddress" rows="2" placeholder="Street, City, State, ZIP"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Shipping Address</label>
+          <textarea id="customerShippingAddress" rows="2" placeholder="Street, City, State, ZIP"></textarea>
+        </div>
+
+        <!-- Marketing & Attribution -->
+        <div class="section-header">
+          <i class="fas fa-bullhorn"></i> Marketing & Lead Source
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>How did you find AcoustiSkin? *</label>
+            <select id="customerLeadSource" required>
+              <option value="">Select Source</option>
+              <option value="Google Search">Google Search</option>
+              <option value="Social Media">Social Media</option>
+              <option value="Facebook Ad">Facebook Ad</option>
+              <option value="Instagram Ad">Instagram Ad</option>
+              <option value="TikTok">TikTok</option>
+              <option value="YouTube">YouTube</option>
+              <option value="Friend Referral">Friend Referral</option>
+              <option value="Pickleball Court">Pickleball Court</option>
+              <option value="Tournament/Event">Tournament/Event</option>
+              <option value="Amazon">Amazon</option>
+              <option value="Retail Store">Retail Store</option>
+              <option value="Email Campaign">Email Campaign</option>
+              <option value="Podcast">Podcast</option>
+              <option value="Blog/Article">Blog/Article</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Referrer Name or Code (if applicable)</label>
+            <input type="text" id="customerReferrer" placeholder="Enter name or referral code (e.g., ACOUS-JOHN-1234)">
+          </div>
+        </div>
+
+        <!-- Social Media -->
+        <div class="section-header">
+          <i class="fas fa-hashtag"></i> Social Media Presence
+        </div>
+        <div class="form-group">
+          <label>Which social media platforms do you use?</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="socialFacebook" value="Facebook">
+              <label for="socialFacebook" style="margin: 0; font-weight: normal;">Facebook</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="socialInstagram" value="Instagram">
+              <label for="socialInstagram" style="margin: 0; font-weight: normal;">Instagram</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="socialTwitter" value="Twitter/X">
+              <label for="socialTwitter" style="margin: 0; font-weight: normal;">Twitter/X</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="socialTikTok" value="TikTok">
+              <label for="socialTikTok" style="margin: 0; font-weight: normal;">TikTok</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="socialYouTube" value="YouTube">
+              <label for="socialYouTube" style="margin: 0; font-weight: normal;">YouTube</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="socialLinkedIn" value="LinkedIn">
+              <label for="socialLinkedIn" style="margin: 0; font-weight: normal;">LinkedIn</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Social Media Handle (optional)</label>
+            <input type="text" id="customerSocialHandle" placeholder="@username">
+          </div>
+          
+          <div class="form-group">
+            <label>Social Engagement Level</label>
+            <select id="customerSocialEngagement">
+              <option value="">Select Level</option>
+              <option value="Very Active">Very Active (Daily posts)</option>
+              <option value="Active">Active (Few times/week)</option>
+              <option value="Moderate">Moderate (Weekly)</option>
+              <option value="Low">Low (Rarely)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Pickleball Profile -->
+        <div class="section-header">
+          <i class="fas fa-table-tennis"></i> Pickleball Profile
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Skill Level</label>
+            <select id="customerSkillLevel">
+              <option value="">Select Level</option>
+              <option value="Beginner">Beginner (1.0-2.5)</option>
+              <option value="Intermediate">Intermediate (3.0-3.5)</option>
+              <option value="Advanced">Advanced (4.0-4.5)</option>
+              <option value="Professional">Professional (5.0+)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Playing Frequency</label>
+            <select id="customerPlayFrequency">
+              <option value="">Select Frequency</option>
+              <option value="Daily">Daily</option>
+              <option value="3-5 times/week">3-5 times/week</option>
+              <option value="1-2 times/week">1-2 times/week</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Occasionally">Occasionally</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Paddle Brand Owned</label>
+            <select id="customerPaddleBrand"></select>
+          </div>
+        </div>
+
+        <!-- Interests & Preferences -->
+        <div class="section-header">
+          <i class="fas fa-heart"></i> Interests & Product Preferences
+        </div>
+        <div class="form-group">
+          <label>Product Interests (Select all that apply)</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="interestNoise" value="Noise Reduction">
+              <label for="interestNoise" style="margin: 0; font-weight: normal;">Noise Reduction</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="interestPerformance" value="Performance">
+              <label for="interestPerformance" style="margin: 0; font-weight: normal;">Performance</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="interestDurability" value="Durability">
+              <label for="interestDurability" style="margin: 0; font-weight: normal;">Durability</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="interestCustomization" value="Customization">
+              <label for="interestCustomization" style="margin: 0; font-weight: normal;">Customization</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="interestGifts" value="Gifts">
+              <label for="interestGifts" style="margin: 0; font-weight: normal;">Gifts/Team Orders</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Communication Preferences -->
+        <div class="section-header">
+          <i class="fas fa-envelope"></i> Communication Preferences
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Preferred Contact Method</label>
+            <select id="customerContactMethod">
+              <option value="Email">Email</option>
+              <option value="Phone">Phone</option>
+              <option value="SMS">Text/SMS</option>
+              <option value="Social Media">Social Media</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Best Time to Contact</label>
+            <select id="customerContactTime">
+              <option value="">Select Time</option>
+              <option value="Morning (8-12)">Morning (8am-12pm)</option>
+              <option value="Afternoon (12-5)">Afternoon (12pm-5pm)</option>
+              <option value="Evening (5-8)">Evening (5pm-8pm)</option>
+              <option value="Anytime">Anytime</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="customerEmailOptIn" style="width: auto;">
+            <span style="font-weight: normal;">Subscribe to email newsletter and updates</span>
+          </label>
+        </div>
+        
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="customerSMSOptIn" style="width: auto;">
+            <span style="font-weight: normal;">Opt-in for SMS/Text notifications</span>
+          </label>
+        </div>
+
+        <!-- Referral & Discounts -->
+        <div class="section-header">
+          <i class="fas fa-gift"></i> Referral & Promotions
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Interested in referring friends?</label>
+            <select id="customerReferralInterest">
+              <option value="Yes">Yes, definitely!</option>
+              <option value="Maybe">Maybe, depends on experience</option>
+              <option value="No">No, not interested</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Interested in future discounts?</label>
+            <select id="customerDiscountInterest">
+              <option value="Yes">Yes, send me deals!</option>
+              <option value="Occasional">Only special occasions</option>
+              <option value="No">No promotions please</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Number of friends interested in AcoustiSkin</label>
+          <input type="number" id="customerPotentialReferrals" min="0" value="0" placeholder="0">
+        </div>
+
+        <!-- Additional Notes -->
+        <div class="section-header">
+          <i class="fas fa-sticky-note"></i> Additional Information
+        </div>
+        <div class="form-group">
+          <label>Special Notes / Custom Requirements</label>
+          <textarea id="customerNotes" rows="3" placeholder="Any special requirements, preferences, or notes about this customer..."></textarea>
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('customerModal')">Cancel</button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-save"></i> Save Customer
+          </button>
+        </div>
+      </form>
     </div>
-</div>
+  </div>
 
-<script>
-    let db = { customers: [], orders: [], tasks: [], pipeline: [], vendors: [], ctx: null };
+  <!-- Order Modal (Same as before with minor enhancements) -->
+  <div id="orderModal" class="modal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #2e5940; font-size: 22px;">Create New Order</h3>
+        <button onclick="closeModal('orderModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+      </div>
+      
+      <form id="orderForm" onsubmit="saveOrder(event)">
+        <div class="section-header">
+          <i class="fas fa-user"></i> Customer Information
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Customer *</label>
+            <select id="orderCustomer" required onchange="loadCustomerDetails()">
+              <option value="">Select Customer</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Order Date *</label>
+            <input type="date" id="orderDate" required>
+          </div>
+        </div>
+        
+        <div class="section-header">
+          <i class="fas fa-shopping-cart"></i> Product Information
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Product/Service *</label>
+            <input type="text" id="orderProduct" required placeholder="e.g., AcoustiSkin Pro">
+          </div>
+          
+          <div class="form-group">
+            <label>Paddle Manufacturer</label>
+            <select id="orderManufacturer">
+              <option value="">Select Manufacturer</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Quantity *</label>
+            <input type="number" id="orderQuantity" min="1" value="1" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Unit Price *</label>
+            <input type="number" id="orderPrice" min="0" step="0.01" required>
+          </div>
+        </div>
+        
+        <div class="section-header">
+          <i class="fas fa-truck"></i> Shipping & Tax
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Shipping Company *</label>
+            <select id="orderShipper" required>
+              <option value="">Select Shipper</option>
+              <option value="USPS">USPS</option>
+              <option value="FedEx">FedEx</option>
+              <option value="UPS">UPS</option>
+              <option value="DHL">DHL</option>
+              <option value="Amazon">Amazon Logistics</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Shipping Fee *</label>
+            <input type="number" id="orderShipping" min="0" step="0.01" value="0" required>
+          </div>
+          
+          <div class="form-group">
+            <label>State (for tax) *</label>
+            <select id="orderState" required onchange="calculateTax()"></select>
+          </div>
+          
+          <div class="form-group">
+            <label>Subtotal</label>
+            <input type="text" id="orderSubtotal" readonly style="background: #f5f5f5;">
+          </div>
+          
+          <div class="form-group">
+            <label>Sales Tax</label>
+            <input type="text" id="orderTax" readonly style="background: #f5f5f5;">
+          </div>
+          
+          <div class="form-group">
+            <label>Total</label>
+            <input type="text" id="orderTotal" readonly style="background: #f5f5f5; font-weight: bold;">
+          </div>
+        </div>
+        
+        <div class="section-header">
+          <i class="fas fa-info-circle"></i> Additional Details
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Status</label>
+            <select id="orderStatus">
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Tracking Number</label>
+            <input type="text" id="orderTracking">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Ship To Address</label>
+          <textarea id="orderShipAddress" rows="2"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="orderNotes" rows="2"></textarea>
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('orderModal')">Cancel</button>
+          <button type="submit" class="btn-primary">Create Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    // INIT
-    window.onload = () => {
-        if(localStorage.getItem('crm_v3')) db = JSON.parse(localStorage.getItem('crm_v3'));
-        else seed();
-        renderAddr();
-        updateCtx();
-        nav('dashboard');
+  <!-- Event Modal (same as before) -->
+  <div id="eventModal" class="modal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #2e5940; font-size: 22px;">
+          <span id="eventModalTitle">Schedule Event</span>
+        </h3>
+        <button onclick="closeModal('eventModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+      </div>
+      
+      <form id="eventForm" onsubmit="saveEvent(event)">
+        <input type="hidden" id="eventId">
+        
+        <div class="form-group">
+          <label>Event Type *</label>
+          <select id="eventType">
+            <option value="meeting">Meeting</option>
+            <option value="call">Phone Call</option>
+            <option value="task">Task</option>
+            <option value="appointment">Appointment</option>
+            <option value="todo">To-Do</option>
+            <option value="deadline">Deadline</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" id="eventTitle" required>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="date" id="eventDate" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Time</label>
+            <input type="time" id="eventTime">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Related Customer</label>
+          <select id="eventCustomer">
+            <option value="">None</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="eventDescription" rows="3"></textarea>
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('eventModal')">Cancel</button>
+          <button type="button" class="btn-danger" id="deleteEventBtn" style="display: none; margin-right: auto;" onclick="deleteEvent()">
+            <i class="fas fa-trash"></i> Delete Event
+          </button>
+          <button type="submit" class="btn-primary">Save Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Event Detail Modal -->
+  <div id="eventDetailModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #2e5940; font-size: 22px;">Event Details</h3>
+        <button onclick="closeModal('eventDetailModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+      </div>
+      
+      <div id="eventDetailContent"></div>
+      
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+        <button class="btn-secondary" onclick="closeModal('eventDetailModal')">Close</button>
+        <button class="btn-primary" onclick="editEventFromDetail()">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+        <button class="btn-danger" onclick="deleteEventFromDetail()">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Referral Details Modal (NEW) -->
+  <div id="referralModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #2e5940; font-size: 22px;">
+          <i class="fas fa-gift"></i> Referral Program Dashboard
+        </h3>
+        <button onclick="closeModal('referralModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+      </div>
+      
+      <div id="referralDetailsContent"></div>
+      
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+        <button class="btn-secondary" onclick="closeModal('referralModal')">Close</button>
+        <button class="btn-primary" onclick="downloadReferralCard()">
+          <i class="fas fa-download"></i> Download Referral Card
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global State
+    let customers = [];
+    let orders = [];
+    let events = [];
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+    let editingCustomerId = null;
+    let editingEventId = null;
+    let currentEventId = null;
+    let currentReferralCustomer = null;
+
+    // Referral System Configuration
+    const REFERRAL_CREDIT_AMOUNT = 15; // $15 credit per successful referral
+    const REFERRAL_TIERS = {
+      bronze: { min: 1, max: 2, discount: 0.10, benefits: ['10% credit', 'Early access'] },
+      silver: { min: 3, max: 5, discount: 0.15, benefits: ['15% credit', 'Free shipping', 'Exclusive designs'] },
+      gold: { min: 6, max: 10, discount: 0.25, benefits: ['25% credit', '2 free replacements/year', 'Custom design', 'VIP support'] },
+      platinum: { min: 11, max: 999, discount: 0.50, benefits: ['50% off all purchases', 'FREE annual replacement', 'Lifetime warranty', 'Brand ambassador', 'Website feature'] }
     };
 
-    function seed() {
-        db = {
-            customers: [{id:'c1', name:'Pickleball Kingdom', email:'buy@pb.com', type:'Wholesale'}, {id:'c2', name:'Dana Lurie', email:'dana@test.com', type:'Internal'}],
-            orders: [{id:'101', cName:'Pickleball Kingdom', total:500, status:'Shipped'}],
-            tasks: [{id:'t1', title:'Call FedEx', date:'2025-10-24'}],
-            pipeline: [{id:'p1', title:'Bulk Order', val:5000, stage:'Negotiation'}],
-            vendors: [{name:'3M Supplies', type:'Materials'}],
-            ctx: null
-        };
-        save();
+    // Generate Unique Referral Code
+    function generateReferralCode(customerName) {
+      const cleanName = customerName.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 5);
+      const random = Math.floor(1000 + Math.random() * 9000);
+      return `ACOUS-${cleanName}-${random}`;
     }
 
-    function save() { localStorage.setItem('crm_v3', JSON.stringify(db)); renderAddr(); updateCtx(); }
-    function resetData() { if(confirm('Reset all data?')) { localStorage.removeItem('crm_v3'); location.reload(); } }
-    function exportData() { 
-        const a = document.createElement('a'); a.href = 'data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(db));
-        a.download = 'backup.json'; document.body.appendChild(a); a.click(); 
+    // Get Referral Tier
+    function getReferralTier(referralCount) {
+      if (referralCount >= REFERRAL_TIERS.platinum.min) return 'platinum';
+      if (referralCount >= REFERRAL_TIERS.gold.min) return 'gold';
+      if (referralCount >= REFERRAL_TIERS.silver.min) return 'silver';
+      if (referralCount >= REFERRAL_TIERS.bronze.min) return 'bronze';
+      return 'none';
     }
 
-    // NAV
-    function nav(view) {
-        document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-        document.getElementById('btn-'+view).classList.add('active');
-        document.getElementById('pageTitle').innerText = view.charAt(0).toUpperCase() + view.slice(1);
-        const c = document.getElementById('view-container');
-        
-        if(view==='dashboard') {
-            const rev = db.orders.reduce((a,b)=>a+b.total,0);
-            c.innerHTML = `
-            <div class="grid grid-cols-4 gap-4 mb-6">
-                <div class="card border-l-4 border-indigo-500"> <div class="text-xs text-gray-500">REVENUE</div> <div class="text-2xl font-bold">$${rev}</div> </div>
-                <div class="card border-l-4 border-green-500"> <div class="text-xs text-gray-500">CUSTOMERS</div> <div class="text-2xl font-bold">${db.customers.length}</div> </div>
-                <div class="card border-l-4 border-blue-500"> <div class="text-xs text-gray-500">PIPELINE</div> <div class="text-2xl font-bold">${db.pipeline.length}</div> </div>
-                <div class="card border-l-4 border-orange-500"> <div class="text-xs text-gray-500">TASKS</div> <div class="text-2xl font-bold">${db.tasks.length}</div> </div>
-            </div>
-            <div class="card"><h3>Recent Activity</h3>${db.orders.map(o=>`<div class="flex justify-between border-b py-2"><span>Order #${o.id} - ${o.cName}</span><b>$${o.total}</b></div>`).join('')}</div>`;
-        }
-        else if(view==='customers') {
-            c.innerHTML = `<div class="card"><table class="w-full text-left"><thead><tr class="bg-gray-100"><th>Name</th><th>Email</th><th>Type</th><th>Action</th></tr></thead>
-            <tbody>${db.customers.map(x=>`<tr><td class="p-2 font-bold text-indigo-700 cursor-pointer" onclick="setCtx('${x.id}')">${x.name}</td><td class="p-2">${x.email}</td><td class="p-2">${x.type}</td><td class="p-2"><button onclick="setCtx('${x.id}');nav('new-order')" class="text-blue-600">Order</button></td></tr>`).join('')}</tbody></table></div>`;
-        }
-        else if(view==='new-order') {
-            const cust = db.customers.find(x=>x.id===db.ctx);
-            if(!cust) { c.innerHTML = `<div class="card text-center text-red-500 font-bold py-10">Select a customer first.</div>`; return; }
-            c.innerHTML = `<div class="card max-w-lg mx-auto"><h3 class="font-bold mb-4">Order for ${cust.name}</h3>
-            <label>Product</label><select id="oProd" class="w-full border p-2 mb-4 rounded"><option value="29.95">Skin ($29.95)</option><option value="150">Bulk ($150)</option></select>
-            <label>Qty</label><input id="oQty" type="number" value="1" class="w-full border p-2 mb-4 rounded">
-            <button onclick="addOrder()" class="w-full bg-green-600 text-white py-2 rounded font-bold">Submit</button></div>`;
-        }
-        else if(view==='tracking') {
-            c.innerHTML = `<div class="card"><table class="w-full text-left"><thead><tr class="bg-gray-100"><th>ID</th><th>Customer</th><th>Status</th><th>Total</th></tr></thead>
-            <tbody>${db.orders.map(o=>`<tr><td class="p-2">#${o.id}</td><td class="p-2">${o.cName}</td><td class="p-2"><span class="bg-green-100 text-green-800 px-2 rounded text-xs">${o.status}</span></td><td class="p-2">$${o.total}</td></tr>`).join('')}</tbody></table></div>`;
-        }
-        else if(view==='calendar') {
-            c.innerHTML = `<div class="card"><h3 class="font-bold mb-4">Tasks</h3>${db.tasks.map(t=>`<div class="flex justify-between border-b py-2"><span>${t.title} <span class="text-xs text-gray-500">${t.date}</span></span><button onclick="delTask('${t.id}')" class="text-red-500">x</button></div>`).join('')}</div>`;
-        }
-        else if(view==='pipeline') {
-            const stages = ['Lead','Negotiation','Closed Won'];
-            c.innerHTML = `<div class="flex gap-4 h-[500px] overflow-x-auto">${stages.map(s=>`<div class="kanban-col"><div class="font-bold mb-2 uppercase text-xs text-gray-500">${s}</div>
-            ${db.pipeline.filter(p=>p.stage===s).map(p=>`<div class="kanban-card"><b>${p.title}</b><br>$${p.val}<br>${s!=='Closed Won'?`<button onclick="movePipe('${p.id}')" class="text-xs text-blue-500 mt-2">Advance</button>`:''}</div>`).join('')}</div>`).join('')}</div>`;
-        }
-        else if(view==='vendors') {
-            c.innerHTML = `<div class="card"><h3 class="font-bold mb-4">Vendors</h3>${db.vendors.map(v=>`<div class="border-b py-2">${v.name} <span class="text-xs text-gray-500">${v.type}</span></div>`).join('')}</div>`;
-        }
-        else if(view==='reports') {
-            c.innerHTML = `<div class="card"><h3 class="font-bold mb-2">Performance</h3><p>Total Orders: ${db.orders.length}</p><p>Total Revenue: $${db.orders.reduce((a,b)=>a+b.total,0)}</p></div>`;
-        }
+    // Get Tier Display Info
+    function getTierInfo(tier) {
+      const tierColors = {
+        platinum: { color: '#667eea', icon: 'gem', name: 'PLATINUM' },
+        gold: { color: '#ffd700', icon: 'medal', name: 'GOLD' },
+        silver: { color: '#c0c0c0', icon: 'medal', name: 'SILVER' },
+        bronze: { color: '#cd7f32', icon: 'medal', name: 'BRONZE' },
+        none: { color: '#999', icon: 'user', name: 'STARTER' }
+      };
+      return tierColors[tier] || tierColors.none;
     }
 
-    // ACTIONS
-    function setCtx(id) { db.ctx = id; save(); }
-    function updateCtx() { 
-        const el = document.getElementById('ctxBadge');
-        if(db.ctx) { 
-            const c = db.customers.find(x=>x.id===db.ctx); 
-            document.getElementById('ctxName').innerText = c?c.name:'Unknown'; 
-            el.style.display = 'inline-flex';
-        } else { el.style.display = 'none'; }
+    // Calculate Referral Credits
+    function calculateReferralCredits(customerId) {
+      const customer = customers.find(c => {
+        const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+        const targetId = typeof customerId === 'string' ? parseInt(customerId) : customerId;
+        return cId === targetId;
+      });
+      
+      if (!customer) return 0;
+      
+      const referralCount = customer.referralsMade || 0;
+      return referralCount * REFERRAL_CREDIT_AMOUNT;
     }
-    function renderAddr() {
-        const term = document.getElementById('search').value.toLowerCase();
-        document.getElementById('addrList').innerHTML = db.customers.filter(c=>c.name.toLowerCase().includes(term)).map(c=>
-            `<div class="p-1 hover:bg-indigo-800 cursor-pointer rounded" onclick="setCtx('${c.id}')">${c.name}</div>`
-        ).join('');
+
+    // Track Referral
+    function trackReferral(referrerId, newCustomerId) {
+      // Find referrer
+      const referrer = customers.find(c => {
+        const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+        const targetId = typeof referrerId === 'string' ? parseInt(referrerId) : referrerId;
+        return cId === targetId;
+      });
+      
+      if (!referrer) return;
+      
+      // Initialize referral tracking
+      if (!referrer.referralsMade) referrer.referralsMade = 0;
+      if (!referrer.referredCustomers) referrer.referredCustomers = [];
+      
+      // Add referral
+      referrer.referralsMade++;
+      referrer.referredCustomers.push({
+        customerId: newCustomerId,
+        date: new Date().toISOString(),
+        creditEarned: REFERRAL_CREDIT_AMOUNT
+      });
+      
+      saveData();
     }
-    function openModal(type) {
-        document.getElementById('modal').style.display = 'flex';
-        const b = document.getElementById('mBody');
-        document.getElementById('mTitle').innerText = 'New ' + type;
-        if(type==='customer') b.innerHTML = `<input id="inp1" placeholder="Name" class="w-full border p-2 mb-2"><input id="inp2" placeholder="Email" class="w-full border p-2 mb-2"><button onclick="saveCust()" class="w-full bg-indigo-600 text-white p-2 rounded">Save</button>`;
-        if(type==='vendor') b.innerHTML = `<input id="inp1" placeholder="Name" class="w-full border p-2 mb-2"><input id="inp2" placeholder="Type" class="w-full border p-2 mb-2"><button onclick="saveVend()" class="w-full bg-indigo-600 text-white p-2 rounded">Save</button>`;
-        if(type==='task') b.innerHTML = `<input id="inp1" placeholder="Task" class="w-full border p-2 mb-2"><input type="date" id="inp2" class="w-full border p-2 mb-2"><button onclick="saveTask()" class="w-full bg-indigo-600 text-white p-2 rounded">Save</button>`;
+
+    // Pickleball Paddle Manufacturers (Alphabetically)
+    const paddleManufacturers = [
+      'Bantam', 'Bread & Butter', 'Babolat', 'Champion Sports', 'CRBN', 'Diadem',
+      'Engage', 'Electrum', 'Franklin Sports', 'Gamma', 'Head', 'Holbrook',
+      'Joola', 'Lion Sports', 'Monarch', 'Onix', 'Paddletek', 'Prince',
+      'ProKennex', 'Prolite', 'Puretec', 'Rally', 'Rhino', 'Selkirk',
+      'Six Zero', 'Tmpr Sports', 'Vulcan', 'Wilson', 'YONEX'
+    ];
+
+    // US State Sales Tax Rates (2024)
+    const stateTaxRates = {
+      'AL': 0.04, 'AK': 0.00, 'AZ': 0.056, 'AR': 0.065, 'CA': 0.0725,
+      'CO': 0.029, 'CT': 0.0635, 'DE': 0.00, 'FL': 0.06, 'GA': 0.04,
+      'HI': 0.04, 'ID': 0.06, 'IL': 0.0625, 'IN': 0.07, 'IA': 0.06,
+      'KS': 0.065, 'KY': 0.06, 'LA': 0.0445, 'ME': 0.055, 'MD': 0.06,
+      'MA': 0.0625, 'MI': 0.06, 'MN': 0.06875, 'MS': 0.07, 'MO': 0.04225,
+      'MT': 0.00, 'NE': 0.055, 'NV': 0.0685, 'NH': 0.00, 'NJ': 0.06625,
+      'NM': 0.05125, 'NY': 0.04, 'NC': 0.0475, 'ND': 0.05, 'OH': 0.0575,
+      'OK': 0.045, 'OR': 0.00, 'PA': 0.06, 'RI': 0.07, 'SC': 0.06,
+      'SD': 0.045, 'TN': 0.07, 'TX': 0.0625, 'UT': 0.0485, 'VT': 0.06,
+      'VA': 0.053, 'WA': 0.065, 'WV': 0.06, 'WI': 0.05, 'WY': 0.04
+    };
+
+    // Dynamic US Federal Holidays Calculator
+    function getUSHolidays(year) {
+      const holidays = {};
+      
+      // New Year's Day - January 1
+      holidays[`${year}-01-01`] = 'New Year\'s Day';
+      
+      // Martin Luther King Jr. Day - Third Monday in January
+      const mlkDay = getNthWeekdayOfMonth(year, 0, 1, 3); // January (0), Monday (1), 3rd occurrence
+      holidays[formatDate(mlkDay)] = 'Martin Luther King Jr. Day';
+      
+      // Presidents' Day - Third Monday in February
+      const presidentsDay = getNthWeekdayOfMonth(year, 1, 1, 3); // February (1), Monday (1), 3rd
+      holidays[formatDate(presidentsDay)] = 'Presidents\' Day';
+      
+      // Memorial Day - Last Monday in May
+      const memorialDay = getLastWeekdayOfMonth(year, 4, 1); // May (4), Monday (1)
+      holidays[formatDate(memorialDay)] = 'Memorial Day';
+      
+      // Juneteenth - June 19 (became federal holiday in 2021)
+      if (year >= 2021) {
+        holidays[`${year}-06-19`] = 'Juneteenth';
+      }
+      
+      // Independence Day - July 4
+      holidays[`${year}-07-04`] = 'Independence Day';
+      
+      // Labor Day - First Monday in September
+      const laborDay = getNthWeekdayOfMonth(year, 8, 1, 1); // September (8), Monday (1), 1st
+      holidays[formatDate(laborDay)] = 'Labor Day';
+      
+      // Columbus Day - Second Monday in October
+      const columbusDay = getNthWeekdayOfMonth(year, 9, 1, 2); // October (9), Monday (1), 2nd
+      holidays[formatDate(columbusDay)] = 'Columbus Day';
+      
+      // Veterans Day - November 11
+      holidays[`${year}-11-11`] = 'Veterans Day';
+      
+      // Thanksgiving - Fourth Thursday in November
+      const thanksgiving = getNthWeekdayOfMonth(year, 10, 4, 4); // November (10), Thursday (4), 4th
+      holidays[formatDate(thanksgiving)] = 'Thanksgiving';
+      
+      // Christmas Day - December 25
+      holidays[`${year}-12-25`] = 'Christmas Day';
+      
+      return holidays;
     }
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
     
-    function saveCust() { db.customers.push({id:'c'+Date.now(), name:document.getElementById('inp1').value, email:document.getElementById('inp2').value, type:'Wholesale'}); save(); closeModal(); nav('customers'); }
-    function saveVend() { db.vendors.push({name:document.getElementById('inp1').value, type:document.getElementById('inp2').value}); save(); closeModal(); nav('vendors'); }
-    function saveTask() { db.tasks.push({id:'t'+Date.now(), title:document.getElementById('inp1').value, date:document.getElementById('inp2').value}); save(); closeModal(); nav('calendar'); }
-    function delTask(id) { db.tasks = db.tasks.filter(t=>t.id!==id); save(); nav('calendar'); }
-    function addOrder() {
-        const c = db.customers.find(x=>x.id===db.ctx);
-        const tot = document.getElementById('oProd').value * document.getElementById('oQty').value;
-        db.orders.unshift({id:Math.floor(Math.random()*1000), cName:c.name, total:tot, status:'Processing'});
-        save(); alert('Order Created'); nav('tracking');
+    // Helper: Get nth occurrence of a weekday in a month
+    function getNthWeekdayOfMonth(year, month, weekday, n) {
+      const firstDay = new Date(year, month, 1);
+      const firstWeekday = firstDay.getDay();
+      
+      // Calculate days until first occurrence of target weekday
+      let daysUntilWeekday = (weekday - firstWeekday + 7) % 7;
+      
+      // Add weeks to get to nth occurrence
+      const targetDate = 1 + daysUntilWeekday + (n - 1) * 7;
+      
+      return new Date(year, month, targetDate);
     }
-    function movePipe(id) { const p = db.pipeline.find(x=>x.id===id); if(p.stage==='Lead') p.stage='Negotiation'; else p.stage='Closed Won'; save(); nav('pipeline'); }
-</script>
+    
+    // Helper: Get last occurrence of a weekday in a month
+    function getLastWeekdayOfMonth(year, month, weekday) {
+      const lastDay = new Date(year, month + 1, 0);
+      const lastDate = lastDay.getDate();
+      const lastWeekday = lastDay.getDay();
+      
+      // Calculate days back from last day to target weekday
+      let daysBack = (lastWeekday - weekday + 7) % 7;
+      
+      return new Date(year, month, lastDate - daysBack);
+    }
+    
+    // Helper: Format date as YYYY-MM-DD
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Initialize App
+    function initApp() {
+      loadData();
+      populateManufacturers();
+      populateStates();
+      renderDashboard();
+      renderCustomers();
+      renderOrders();
+      renderCalendar();
+      renderAnalytics();
+      renderMarketing();
+      
+      // Auto-calculate order totals
+      document.getElementById('orderQuantity').addEventListener('input', calculateOrderTotal);
+      document.getElementById('orderPrice').addEventListener('input', calculateOrderTotal);
+      document.getElementById('orderShipping').addEventListener('input', calculateOrderTotal);
+      
+      // Set default dates
+      document.getElementById('orderDate').valueAsDate = new Date();
+      document.getElementById('eventDate').valueAsDate = new Date();
+    }
+
+    // Populate dropdowns
+    function populateManufacturers() {
+      const select1 = document.getElementById('orderManufacturer');
+      const select2 = document.getElementById('customerPaddleBrand');
+      const options = '<option value="">Select Manufacturer</option>' + 
+        paddleManufacturers.map(m => `<option value="${m}">${m}</option>`).join('');
+      select1.innerHTML = options;
+      select2.innerHTML = options;
+    }
+
+    function populateStates() {
+      const states = Object.keys(stateTaxRates).sort();
+      const options = '<option value="">Select State</option>' + 
+        states.map(s => `<option value="${s}">${s}</option>`).join('');
+      document.getElementById('orderState').innerHTML = options;
+      document.getElementById('customerState').innerHTML = options;
+    }
+
+    // AI-Powered Customer Scoring
+    function calculateCustomerScore(customer) {
+      let score = 50; // Base score
+      
+      // Lead source quality
+      const highQualitySources = ['Friend Referral', 'Tournament/Event', 'Pickleball Court'];
+      if (highQualitySources.includes(customer.leadSource)) score += 15;
+      
+      // Social media presence
+      const socialCount = (customer.socialPlatforms || []).length;
+      score += socialCount * 3;
+      
+      // Engagement level
+      if (customer.socialEngagement === 'Very Active') score += 10;
+      else if (customer.socialEngagement === 'Active') score += 7;
+      
+      // Communication preferences
+      if (customer.emailOptIn) score += 5;
+      if (customer.smsOptIn) score += 5;
+      
+      // Referral potential
+      if (customer.referralInterest === 'Yes') score += 10;
+      score += (customer.potentialReferrals || 0) * 2;
+      
+      // Discount interest (indicates buying intent)
+      if (customer.discountInterest === 'Yes') score += 5;
+      
+      // Playing frequency (indicates commitment)
+      if (customer.playFrequency === 'Daily') score += 10;
+      else if (customer.playFrequency === '3-5 times/week') score += 7;
+      
+      // Cap at 100
+      return Math.min(100, score);
+    }
+
+    function getScoreClass(score) {
+      if (score >= 75) return 'score-high';
+      if (score >= 50) return 'score-medium';
+      return 'score-low';
+    }
+
+    function getScoreLabel(score) {
+      if (score >= 75) return 'High Value';
+      if (score >= 50) return 'Medium';
+      return 'Needs Nurturing';
+    }
+
+    // Calculate order totals with tax
+    function calculateOrderTotal() {
+      const qty = parseFloat(document.getElementById('orderQuantity').value) || 0;
+      const price = parseFloat(document.getElementById('orderPrice').value) || 0;
+      const shipping = parseFloat(document.getElementById('orderShipping').value) || 0;
+      const state = document.getElementById('orderState').value;
+      
+      const subtotal = qty * price;
+      document.getElementById('orderSubtotal').value = '$' + subtotal.toFixed(2);
+      
+      let tax = 0;
+      if (state && stateTaxRates[state]) {
+        tax = subtotal * stateTaxRates[state];
+      }
+      document.getElementById('orderTax').value = '$' + tax.toFixed(2);
+      
+      const total = subtotal + shipping + tax;
+      document.getElementById('orderTotal').value = '$' + total.toFixed(2);
+    }
+
+    function calculateTax() {
+      calculateOrderTotal();
+    }
+
+    // Data Management
+    function loadData() {
+      const saved = localStorage.getItem('acoustiskinCRM_AI');
+      if (saved) {
+        const data = JSON.parse(saved);
+        customers = data.customers || [];
+        orders = data.orders || [];
+        events = data.events || [];
+        
+        // Initialize referral codes for existing customers
+        let updated = false;
+        customers.forEach(customer => {
+          if (!customer.referralCode) {
+            customer.referralCode = generateReferralCode(customer.name);
+            customer.referralsMade = customer.referralsMade || 0;
+            customer.referredCustomers = customer.referredCustomers || [];
+            customer.referralCredits = customer.referralCredits || 0;
+            updated = true;
+          }
+        });
+        
+        if (updated) {
+          saveData();
+        }
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem('acoustiskinCRM_AI', JSON.stringify({
+        customers,
+        orders,
+        events
+      }));
+    }
+
+    function exportData() {
+      const data = { customers, orders, events };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `acoustiskin-crm-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      showNotification('Data exported successfully!');
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          customers = data.customers || [];
+          orders = data.orders || [];
+          events = data.events || [];
+          saveData();
+          initApp();
+          showNotification('Data imported successfully!');
+        } catch (error) {
+          alert('Error importing data. Please check the file format.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // View Management
+    function showView(viewName) {
+      document.querySelectorAll('.view-content').forEach(v => v.style.display = 'none');
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      
+      document.getElementById(viewName + '-view').style.display = 'block';
+      event.target.closest('.nav-item').classList.add('active');
+      
+      // Refresh view data
+      switch(viewName) {
+        case 'dashboard': renderDashboard(); break;
+        case 'customers': renderCustomers(); break;
+        case 'orders': renderOrders(); break;
+        case 'calendar': renderCalendar(); break;
+        case 'analytics': renderAnalytics(); break;
+        case 'marketing': renderMarketing(); break;
+        case 'referrals': renderReferrals(); break;
+      }
+    }
+
+    // Dashboard with AI Insights
+    function renderDashboard() {
+      document.getElementById('totalCustomers').textContent = customers.length;
+      document.getElementById('totalOrders').textContent = orders.length;
+      
+      const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+      document.getElementById('totalRevenue').textContent = '$' + totalRevenue.toLocaleString();
+      
+      // Referral rate calculation
+      const willingToRefer = customers.filter(c => c.referralInterest === 'Yes').length;
+      const referralRate = customers.length > 0 ? Math.round((willingToRefer / customers.length) * 100) : 0;
+      document.getElementById('referralRate').textContent = referralRate + '%';
+      
+      // AI Insights
+      const insights = document.getElementById('aiInsights');
+      let insightsHTML = '';
+      
+      // Most common lead source
+      const leadSources = {};
+      customers.forEach(c => {
+        if (c.leadSource) {
+          leadSources[c.leadSource] = (leadSources[c.leadSource] || 0) + 1;
+        }
+      });
+      const topSource = Object.entries(leadSources).sort((a, b) => b[1] - a[1])[0];
+      if (topSource) {
+        insightsHTML += `
+          <div style="padding: 12px; background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 6px; margin-bottom: 10px;">
+            <strong><i class="fas fa-lightbulb"></i> Top Lead Source:</strong> ${topSource[0]} (${topSource[1]} customers)
+            <br><small>💡 Consider increasing marketing efforts here!</small>
+          </div>
+        `;
+      }
+      
+      // High-value customers
+      const highValueCustomers = customers.filter(c => calculateCustomerScore(c) >= 75).length;
+      if (highValueCustomers > 0) {
+        insightsHTML += `
+          <div style="padding: 12px; background: #c8e6c9; border-left: 4px solid #43a047; border-radius: 6px; margin-bottom: 10px;">
+            <strong><i class="fas fa-star"></i> High-Value Customers:</strong> ${highValueCustomers} customers
+            <br><small>🎯 These are your best potential advocates!</small>
+          </div>
+        `;
+      }
+      
+      // Social media opportunity
+      const socialCustomers = customers.filter(c => c.socialPlatforms && c.socialPlatforms.length > 0).length;
+      if (socialCustomers > 0) {
+        insightsHTML += `
+          <div style="padding: 12px; background: #f3e5f5; border-left: 4px solid #ab47bc; border-radius: 6px; margin-bottom: 10px;">
+            <strong><i class="fas fa-hashtag"></i> Social Media Reach:</strong> ${socialCustomers} customers active on social
+            <br><small>📱 Great opportunity for user-generated content!</small>
+          </div>
+        `;
+      }
+      
+      insights.innerHTML = insightsHTML || '<p style="color: #999; text-align: center;">Add more customers to see AI-powered insights!</p>';
+      
+      // Today's Tasks
+      const todayTasks = document.getElementById('todayTasks');
+      const todayEvents = events.filter(e => e.date === new Date().toISOString().split('T')[0]);
+      if (todayEvents.length > 0) {
+        todayTasks.innerHTML = todayEvents.map(e => {
+          const customer = e.customerId ? customers.find(c => {
+            const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+            const eventCustId = typeof e.customerId === 'string' ? parseInt(e.customerId) : e.customerId;
+            return cId === eventCustId;
+          }) : null;
+          
+          return `
+          <div style="padding: 10px; border-bottom: 1px solid #e8f5e9; cursor: pointer;" onclick="viewEventDetail('${e.id}')">
+            <div style="font-weight: 600; color: #2e5940;">${e.title}</div>
+            <div style="font-size: 12px; color: #666;">${e.time || 'All day'} - ${e.type}</div>
+            ${customer ? `<div style="font-size: 11px; color: #999;">${customer.name}</div>` : ''}
+          </div>
+        `;
+        }).join('');
+      } else {
+        todayTasks.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No tasks for today</p>';
+      }
+    }
+
+    // Customers with AI Scoring
+    function renderCustomers() {
+      const tbody = document.getElementById('customersTableBody');
+      if (customers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #999;">No customers yet. Add your first customer!</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = customers.map(c => {
+        const score = calculateCustomerScore(c);
+        return `
+          <tr>
+            <td>${c.name}</td>
+            <td>${c.email}</td>
+            <td>${c.leadSource || 'N/A'}</td>
+            <td><span class="status-badge status-${c.status}">${c.status}</span></td>
+            <td>
+              <span class="score-badge ${getScoreClass(score)}">
+                ${score} - ${getScoreLabel(score)}
+              </span>
+            </td>
+            <td>
+              <button class="btn-secondary" onclick="viewReferralInfo(${c.id})" style="margin-right: 5px;" title="View Referral Dashboard">
+                <i class="fas fa-gift"></i>
+              </button>
+              <button class="btn-secondary" onclick="editCustomer(${c.id})" style="margin-right: 5px;">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <button class="btn-danger" onclick="deleteCustomer(${c.id})">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterCustomers() {
+      const search = document.getElementById('searchCustomers').value.toLowerCase();
+      const rows = document.querySelectorAll('#customersTableBody tr');
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(search) ? '' : 'none';
+      });
+    }
+
+    function openCustomerModal(id = null) {
+      editingCustomerId = id;
+      document.getElementById('customerModal').style.display = 'block';
+      
+      if (id) {
+        // Convert to number for consistent comparison
+        const numId = typeof id === 'string' ? parseInt(id) : id;
+        const customer = customers.find(c => {
+          const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+          return cId === numId;
+        });
+        
+        if (!customer) return;
+        
+        document.getElementById('customerModalTitle').textContent = 'Edit Customer';
+        document.getElementById('customerId').value = customer.id;
+        document.getElementById('customerName').value = customer.name || '';
+        document.getElementById('customerContact').value = customer.contact || '';
+        document.getElementById('customerEmail').value = customer.email || '';
+        document.getElementById('customerPhone').value = customer.phone || '';
+        document.getElementById('customerStatus').value = customer.status || 'prospect';
+        document.getElementById('customerIndustry').value = customer.industry || '';
+        document.getElementById('customerAgeRange').value = customer.ageRange || '';
+        document.getElementById('customerCity').value = customer.city || '';
+        document.getElementById('customerState').value = customer.state || '';
+        document.getElementById('customerBillingAddress').value = customer.billingAddress || '';
+        document.getElementById('customerShippingAddress').value = customer.shippingAddress || '';
+        document.getElementById('customerLeadSource').value = customer.leadSource || '';
+        document.getElementById('customerReferrer').value = customer.referrer || '';
+        
+        // Social media checkboxes
+        const platforms = customer.socialPlatforms || [];
+        document.getElementById('socialFacebook').checked = platforms.includes('Facebook');
+        document.getElementById('socialInstagram').checked = platforms.includes('Instagram');
+        document.getElementById('socialTwitter').checked = platforms.includes('Twitter/X');
+        document.getElementById('socialTikTok').checked = platforms.includes('TikTok');
+        document.getElementById('socialYouTube').checked = platforms.includes('YouTube');
+        document.getElementById('socialLinkedIn').checked = platforms.includes('LinkedIn');
+        
+        document.getElementById('customerSocialHandle').value = customer.socialHandle || '';
+        document.getElementById('customerSocialEngagement').value = customer.socialEngagement || '';
+        document.getElementById('customerSkillLevel').value = customer.skillLevel || '';
+        document.getElementById('customerPlayFrequency').value = customer.playFrequency || '';
+        document.getElementById('customerPaddleBrand').value = customer.paddleBrand || '';
+        
+        // Product interests checkboxes
+        const interests = customer.productInterests || [];
+        document.getElementById('interestNoise').checked = interests.includes('Noise Reduction');
+        document.getElementById('interestPerformance').checked = interests.includes('Performance');
+        document.getElementById('interestDurability').checked = interests.includes('Durability');
+        document.getElementById('interestCustomization').checked = interests.includes('Customization');
+        document.getElementById('interestGifts').checked = interests.includes('Gifts');
+        
+        document.getElementById('customerContactMethod').value = customer.contactMethod || 'Email';
+        document.getElementById('customerContactTime').value = customer.contactTime || '';
+        document.getElementById('customerEmailOptIn').checked = customer.emailOptIn || false;
+        document.getElementById('customerSMSOptIn').checked = customer.smsOptIn || false;
+        document.getElementById('customerReferralInterest').value = customer.referralInterest || 'Maybe';
+        document.getElementById('customerDiscountInterest').value = customer.discountInterest || 'Yes';
+        document.getElementById('customerPotentialReferrals').value = customer.potentialReferrals || 0;
+        document.getElementById('customerNotes').value = customer.notes || '';
+      } else {
+        document.getElementById('customerModalTitle').textContent = 'Add New Customer';
+        document.getElementById('customerForm').reset();
+        document.getElementById('customerId').value = '';
+      }
+    }
+
+    function saveCustomer(e) {
+      e.preventDefault();
+      
+      // Collect social platforms
+      const socialPlatforms = [];
+      if (document.getElementById('socialFacebook').checked) socialPlatforms.push('Facebook');
+      if (document.getElementById('socialInstagram').checked) socialPlatforms.push('Instagram');
+      if (document.getElementById('socialTwitter').checked) socialPlatforms.push('Twitter/X');
+      if (document.getElementById('socialTikTok').checked) socialPlatforms.push('TikTok');
+      if (document.getElementById('socialYouTube').checked) socialPlatforms.push('YouTube');
+      if (document.getElementById('socialLinkedIn').checked) socialPlatforms.push('LinkedIn');
+      
+      // Collect product interests
+      const productInterests = [];
+      if (document.getElementById('interestNoise').checked) productInterests.push('Noise Reduction');
+      if (document.getElementById('interestPerformance').checked) productInterests.push('Performance');
+      if (document.getElementById('interestDurability').checked) productInterests.push('Durability');
+      if (document.getElementById('interestCustomization').checked) productInterests.push('Customization');
+      if (document.getElementById('interestGifts').checked) productInterests.push('Gifts');
+      
+      const customer = {
+        id: editingCustomerId || Date.now(),
+        name: document.getElementById('customerName').value,
+        contact: document.getElementById('customerContact').value,
+        email: document.getElementById('customerEmail').value,
+        phone: document.getElementById('customerPhone').value,
+        status: document.getElementById('customerStatus').value,
+        industry: document.getElementById('customerIndustry').value,
+        ageRange: document.getElementById('customerAgeRange').value,
+        city: document.getElementById('customerCity').value,
+        state: document.getElementById('customerState').value,
+        billingAddress: document.getElementById('customerBillingAddress').value,
+        shippingAddress: document.getElementById('customerShippingAddress').value,
+        leadSource: document.getElementById('customerLeadSource').value,
+        referrer: document.getElementById('customerReferrer').value,
+        socialPlatforms: socialPlatforms,
+        socialHandle: document.getElementById('customerSocialHandle').value,
+        socialEngagement: document.getElementById('customerSocialEngagement').value,
+        skillLevel: document.getElementById('customerSkillLevel').value,
+        playFrequency: document.getElementById('customerPlayFrequency').value,
+        paddleBrand: document.getElementById('customerPaddleBrand').value,
+        productInterests: productInterests,
+        contactMethod: document.getElementById('customerContactMethod').value,
+        contactTime: document.getElementById('customerContactTime').value,
+        emailOptIn: document.getElementById('customerEmailOptIn').checked,
+        smsOptIn: document.getElementById('customerSMSOptIn').checked,
+        referralInterest: document.getElementById('customerReferralInterest').value,
+        discountInterest: document.getElementById('customerDiscountInterest').value,
+        potentialReferrals: parseInt(document.getElementById('customerPotentialReferrals').value) || 0,
+        notes: document.getElementById('customerNotes').value,
+        createdAt: editingCustomerId ? (customers.find(c => {
+          const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+          const targetId = typeof editingCustomerId === 'string' ? parseInt(editingCustomerId) : editingCustomerId;
+          return cId === targetId;
+        })?.createdAt || new Date().toISOString()) : new Date().toISOString()
+      };
+      
+      // Generate referral code if new customer
+      if (!editingCustomerId) {
+        customer.referralCode = generateReferralCode(customer.name);
+        customer.referralsMade = 0;
+        customer.referredCustomers = [];
+        customer.referralCredits = 0;
+      } else {
+        // Preserve existing referral data
+        const existingCustomer = customers.find(c => {
+          const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+          const targetId = typeof editingCustomerId === 'string' ? parseInt(editingCustomerId) : editingCustomerId;
+          return cId === targetId;
+        });
+        if (existingCustomer) {
+          customer.referralCode = existingCustomer.referralCode || generateReferralCode(customer.name);
+          customer.referralsMade = existingCustomer.referralsMade || 0;
+          customer.referredCustomers = existingCustomer.referredCustomers || [];
+          customer.referralCredits = existingCustomer.referralCredits || 0;
+        }
+      }
+      
+      // Track referral if referred by someone
+      if (customer.referrer && !editingCustomerId) {
+        const referrer = customers.find(c => 
+          c.name.toLowerCase().includes(customer.referrer.toLowerCase()) ||
+          c.referralCode === customer.referrer.toUpperCase()
+        );
+        if (referrer) {
+          trackReferral(referrer.id, customer.id);
+        }
+      }
+      
+      if (editingCustomerId) {
+        // Convert to number for consistent comparison
+        const numId = typeof editingCustomerId === 'string' ? parseInt(editingCustomerId) : editingCustomerId;
+        const index = customers.findIndex(c => {
+          const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+          return cId === numId;
+        });
+        if (index !== -1) {
+          customers[index] = customer;
+        }
+      } else {
+        customers.push(customer);
+      }
+      
+      saveData();
+      closeModal('customerModal');
+      renderCustomers();
+      renderDashboard();
+      renderMarketing();
+      updateOrderCustomerDropdown();
+      
+      showNotification('Customer saved successfully! AI score calculated.');
+    }
+
+    function editCustomer(id) {
+      // Convert to number for consistent comparison
+      const numId = typeof id === 'string' ? parseInt(id) : id;
+      openCustomerModal(numId);
+    }
+
+    function deleteCustomer(id) {
+      if (confirm('Are you sure you want to delete this customer? This will also delete all their orders.')) {
+        // Convert to number for consistent comparison
+        const numId = typeof id === 'string' ? parseInt(id) : id;
+        
+        customers = customers.filter(c => {
+          const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+          return cId !== numId;
+        });
+        
+        orders = orders.filter(o => {
+          const oCustomerId = typeof o.customerId === 'string' ? parseInt(o.customerId) : o.customerId;
+          return oCustomerId !== numId;
+        });
+        
+        saveData();
+        renderCustomers();
+        renderOrders();
+        renderDashboard();
+        renderMarketing();
+        showNotification('Customer deleted successfully');
+      }
+    }
+
+    // Orders (same as before)
+    function renderOrders() {
+      const tbody = document.getElementById('ordersTableBody');
+      if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #999;">No orders yet. Create your first order!</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = orders.map(o => {
+        const customer = customers.find(c => {
+          const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+          const orderCustId = typeof o.customerId === 'string' ? parseInt(o.customerId) : o.customerId;
+          return cId === orderCustId;
+        });
+        return `
+          <tr>
+            <td>${o.id}</td>
+            <td>${customer ? customer.name : 'Unknown Customer'}</td>
+            <td>${new Date(o.date).toLocaleDateString()}</td>
+            <td>$${o.total?.toFixed(2) || '0.00'}</td>
+            <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+            <td>
+              <button class="btn-secondary" onclick="viewOrder('${o.id}')" style="margin-right: 5px;">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button class="btn-danger" onclick="deleteOrder('${o.id}')">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openOrderModal() {
+      document.getElementById('orderModal').style.display = 'block';
+      document.getElementById('orderForm').reset();
+      document.getElementById('orderDate').valueAsDate = new Date();
+      updateOrderCustomerDropdown();
+    }
+
+    function updateOrderCustomerDropdown() {
+      const select = document.getElementById('orderCustomer');
+      select.innerHTML = '<option value="">Select Customer</option>' + 
+        customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      
+      const eventSelect = document.getElementById('eventCustomer');
+      eventSelect.innerHTML = '<option value="">None</option>' + 
+        customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    }
+
+    function loadCustomerDetails() {
+      const customerId = parseInt(document.getElementById('orderCustomer').value);
+      if (customerId) {
+        const customer = customers.find(c => {
+          const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+          return cId === customerId;
+        });
+        if (customer) {
+          document.getElementById('orderShipAddress').value = customer.shippingAddress || '';
+          if (customer.state) {
+            document.getElementById('orderState').value = customer.state;
+          }
+        }
+      }
+    }
+
+    function saveOrder(e) {
+      e.preventDefault();
+      
+      const qty = parseFloat(document.getElementById('orderQuantity').value);
+      const price = parseFloat(document.getElementById('orderPrice').value);
+      const shipping = parseFloat(document.getElementById('orderShipping').value);
+      const state = document.getElementById('orderState').value;
+      const subtotal = qty * price;
+      const tax = state ? subtotal * (stateTaxRates[state] || 0) : 0;
+      const total = subtotal + shipping + tax;
+      
+      const order = {
+        id: 'ORD-' + Date.now(),
+        customerId: parseInt(document.getElementById('orderCustomer').value),
+        date: document.getElementById('orderDate').value,
+        product: document.getElementById('orderProduct').value,
+        manufacturer: document.getElementById('orderManufacturer').value,
+        quantity: qty,
+        price: price,
+        shipping: shipping,
+        shipper: document.getElementById('orderShipper').value,
+        state: state,
+        subtotal: subtotal,
+        tax: tax,
+        total: total,
+        status: document.getElementById('orderStatus').value,
+        tracking: document.getElementById('orderTracking').value,
+        shipAddress: document.getElementById('orderShipAddress').value,
+        notes: document.getElementById('orderNotes').value
+      };
+      
+      orders.push(order);
+      saveData();
+      closeModal('orderModal');
+      renderOrders();
+      renderDashboard();
+      showNotification('Order created successfully!');
+    }
+
+    function viewOrder(id) {
+      const order = orders.find(o => o.id === id);
+      if (!order) {
+        showNotification('Order not found', 'error');
+        return;
+      }
+      
+      const customer = customers.find(c => {
+        const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+        const orderCustId = typeof order.customerId === 'string' ? parseInt(order.customerId) : order.customerId;
+        return cId === orderCustId;
+      });
+      
+      let details = `Order Details:\n\n`;
+      details += `Order ID: ${order.id}\n`;
+      details += `Customer: ${customer ? customer.name : 'Unknown'}\n`;
+      details += `Date: ${new Date(order.date).toLocaleDateString()}\n\n`;
+      details += `Product: ${order.product}\n`;
+      if (order.manufacturer) details += `Manufacturer: ${order.manufacturer}\n`;
+      details += `Quantity: ${order.quantity}\n`;
+      details += `Unit Price: $${order.price.toFixed(2)}\n\n`;
+      details += `Subtotal: $${order.subtotal.toFixed(2)}\n`;
+      details += `Shipping (${order.shipper}): $${order.shipping.toFixed(2)}\n`;
+      details += `Tax (${order.state}): $${order.tax.toFixed(2)}\n`;
+      details += `Total: $${order.total.toFixed(2)}\n\n`;
+      details += `Status: ${order.status}\n`;
+      if (order.tracking) details += `Tracking: ${order.tracking}\n`;
+      if (order.notes) details += `\nNotes: ${order.notes}`;
+      
+      alert(details);
+    }
+
+    function deleteOrder(id) {
+      if (confirm('Are you sure you want to delete this order?')) {
+        // Order IDs are strings like 'ORD-123456789', so use string comparison
+        orders = orders.filter(o => o.id !== id);
+        saveData();
+        renderOrders();
+        renderDashboard();
+        showNotification('Order deleted successfully');
+      }
+    }
+
+    // Calendar with Dynamic Holidays
+    function renderCalendar() {
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+      
+      document.getElementById('calendarTitle').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+      
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const today = new Date();
+      
+      // Get holidays for the current year being displayed
+      const yearHolidays = getUSHolidays(currentYear);
+      
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+      
+      for (let i = 0; i < firstDay; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'calendar-day';
+        cell.style.background = '#f5f5f5';
+        grid.appendChild(cell);
+      }
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'calendar-day';
+        
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isToday = today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+        
+        if (isToday) cell.classList.add('today');
+        
+        const dayEvents = events.filter(e => e.date === dateStr);
+        const holiday = yearHolidays[dateStr];
+        
+        let html = `<div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${day}</div>`;
+        
+        if (holiday) {
+          html += `<div class="holiday-item" title="${holiday}">${holiday}</div>`;
+        }
+        
+        html += dayEvents.map(e => `
+          <div class="event-item" onclick="event.stopPropagation(); viewEventDetail('${e.id}')" title="${e.title}">
+            ${e.time || ''} ${e.title.substring(0, 15)}${e.title.length > 15 ? '...' : ''}
+          </div>
+        `).join('');
+        
+        cell.innerHTML = html;
+        cell.onclick = function() {
+          document.getElementById('eventDate').value = dateStr;
+          openEventModal();
+        };
+        
+        grid.appendChild(cell);
+      }
+    }
+
+    function changeMonth(delta) {
+      if (delta === 0) {
+        currentMonth = new Date().getMonth();
+        currentYear = new Date().getFullYear();
+      } else {
+        currentMonth += delta;
+        if (currentMonth > 11) {
+          currentMonth = 0;
+          currentYear++;
+        } else if (currentMonth < 0) {
+          currentMonth = 11;
+          currentYear--;
+        }
+      }
+      renderCalendar();
+    }
+
+    function openEventModal(id = null) {
+      editingEventId = id;
+      document.getElementById('eventModal').style.display = 'block';
+      updateOrderCustomerDropdown();
+      
+      if (id) {
+        // Convert to number for consistent comparison
+        const numId = typeof id === 'string' ? parseInt(id) : id;
+        const evt = events.find(e => {
+          const eId = typeof e.id === 'string' ? parseInt(e.id) : e.id;
+          return eId === numId;
+        });
+        
+        if (!evt) return;
+        
+        document.getElementById('eventModalTitle').textContent = 'Edit Event';
+        document.getElementById('eventId').value = evt.id;
+        document.getElementById('eventType').value = evt.type || 'meeting';
+        document.getElementById('eventTitle').value = evt.title || '';
+        document.getElementById('eventDate').value = evt.date || '';
+        document.getElementById('eventTime').value = evt.time || '';
+        document.getElementById('eventCustomer').value = evt.customerId || '';
+        document.getElementById('eventDescription').value = evt.description || '';
+        document.getElementById('deleteEventBtn').style.display = 'block';
+      } else {
+        document.getElementById('eventModalTitle').textContent = 'Schedule Event';
+        document.getElementById('eventForm').reset();
+        document.getElementById('eventId').value = '';
+        if (!document.getElementById('eventDate').value) {
+          document.getElementById('eventDate').valueAsDate = new Date();
+        }
+        document.getElementById('deleteEventBtn').style.display = 'none';
+      }
+    }
+
+    function saveEvent(e) {
+      e.preventDefault();
+      
+      const evt = {
+        id: editingEventId || Date.now(),
+        type: document.getElementById('eventType').value,
+        title: document.getElementById('eventTitle').value,
+        date: document.getElementById('eventDate').value,
+        time: document.getElementById('eventTime').value,
+        customerId: parseInt(document.getElementById('eventCustomer').value) || null,
+        description: document.getElementById('eventDescription').value
+      };
+      
+      if (editingEventId) {
+        // Convert to number for consistent comparison
+        const numId = typeof editingEventId === 'string' ? parseInt(editingEventId) : editingEventId;
+        const index = events.findIndex(ev => {
+          const evId = typeof ev.id === 'string' ? parseInt(ev.id) : ev.id;
+          return evId === numId;
+        });
+        if (index !== -1) {
+          events[index] = evt;
+        }
+      } else {
+        events.push(evt);
+      }
+      
+      saveData();
+      closeModal('eventModal');
+      renderCalendar();
+      renderDashboard();
+      showNotification('Event saved successfully!');
+    }
+
+    function viewEventDetail(id) {
+      // Convert string ID to number for consistent comparison
+      const numId = typeof id === 'string' ? parseInt(id) : id;
+      const evt = events.find(e => {
+        const eId = typeof e.id === 'string' ? parseInt(e.id) : e.id;
+        return eId === numId;
+      });
+      
+      if (!evt) return;
+      
+      currentEventId = evt.id; // Store the actual ID from the event object
+      const customer = evt.customerId ? customers.find(c => {
+        const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+        const eventCustId = typeof evt.customerId === 'string' ? parseInt(evt.customerId) : evt.customerId;
+        return cId === eventCustId;
+      }) : null;
+      
+      const content = document.getElementById('eventDetailContent');
+      content.innerHTML = `
+        <div style="padding: 10px;">
+          <p style="margin-bottom: 10px;"><strong style="color: #2e5940;">Type:</strong> ${evt.type}</p>
+          <p style="margin-bottom: 10px;"><strong style="color: #2e5940;">Title:</strong> ${evt.title}</p>
+          <p style="margin-bottom: 10px;"><strong style="color: #2e5940;">Date:</strong> ${new Date(evt.date).toLocaleDateString()}</p>
+          ${evt.time ? `<p style="margin-bottom: 10px;"><strong style="color: #2e5940;">Time:</strong> ${evt.time}</p>` : ''}
+          ${customer ? `<p style="margin-bottom: 10px;"><strong style="color: #2e5940;">Customer:</strong> ${customer.name}</p>` : ''}
+          ${evt.description ? `<p style="margin-bottom: 10px;"><strong style="color: #2e5940;">Description:</strong><br>${evt.description}</p>` : ''}
+        </div>
+      `;
+      
+      document.getElementById('eventDetailModal').style.display = 'block';
+    }
+
+    function editEventFromDetail() {
+      closeModal('eventDetailModal');
+      if (currentEventId) {
+        // Convert to number for consistent comparison
+        const numId = typeof currentEventId === 'string' ? parseInt(currentEventId) : currentEventId;
+        openEventModal(numId);
+      }
+    }
+
+    function deleteEventFromDetail() {
+      if (!currentEventId) return;
+      
+      if (confirm('Are you sure you want to delete this event?')) {
+        // Convert to number for consistent comparison
+        const numId = typeof currentEventId === 'string' ? parseInt(currentEventId) : currentEventId;
+        events = events.filter(e => {
+          const eId = typeof e.id === 'string' ? parseInt(e.id) : e.id;
+          return eId !== numId;
+        });
+        saveData();
+        closeModal('eventDetailModal');
+        renderCalendar();
+        renderDashboard();
+        showNotification('Event deleted successfully');
+      }
+    }
+
+    function deleteEvent(id = null) {
+      const eventId = id || editingEventId;
+      if (!eventId) return;
+      
+      if (confirm('Are you sure you want to delete this event?')) {
+        // Convert to number for consistent comparison
+        const numId = typeof eventId === 'string' ? parseInt(eventId) : eventId;
+        events = events.filter(e => {
+          const eId = typeof e.id === 'string' ? parseInt(e.id) : e.id;
+          return eId !== numId;
+        });
+        saveData();
+        closeModal('eventModal');
+        closeModal('eventDetailModal');
+        renderCalendar();
+        renderDashboard();
+        showNotification('Event deleted successfully');
+      }
+    }
+
+    // Marketing Intelligence
+    function renderMarketing() {
+      // Lead Sources Chart
+      const leadSourceCtx = document.getElementById('leadSourceChart');
+      if (leadSourceCtx && leadSourceCtx.getContext) {
+        const leadSources = {};
+        customers.forEach(c => {
+          if (c.leadSource) {
+            leadSources[c.leadSource] = (leadSources[c.leadSource] || 0) + 1;
+          }
+        });
+        
+        new Chart(leadSourceCtx, {
+          type: 'pie',
+          data: {
+            labels: Object.keys(leadSources),
+            datasets: [{
+              data: Object.values(leadSources),
+              backgroundColor: [
+                '#66bb6a', '#42a5f5', '#ffa726', '#ab47bc', '#ef5350',
+                '#26c6da', '#ffca28', '#ec407a', '#7e57c2', '#26a69a'
+              ]
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: true }
+        });
+      }
+      
+      // Social Media Chart
+      const socialCtx = document.getElementById('socialMediaChart');
+      if (socialCtx && socialCtx.getContext) {
+        const socialCounts = {
+          'Facebook': 0, 'Instagram': 0, 'Twitter/X': 0, 
+          'TikTok': 0, 'YouTube': 0, 'LinkedIn': 0
+        };
+        
+        customers.forEach(c => {
+          if (c.socialPlatforms) {
+            c.socialPlatforms.forEach(platform => {
+              if (socialCounts.hasOwnProperty(platform)) {
+                socialCounts[platform]++;
+              }
+            });
+          }
+        });
+        
+        new Chart(socialCtx, {
+          type: 'bar',
+          data: {
+            labels: Object.keys(socialCounts),
+            datasets: [{
+              label: 'Customers',
+              data: Object.values(socialCounts),
+              backgroundColor: '#66bb6a'
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: true }
+        });
+      }
+      
+      // Referral Insights
+      const referralInsights = document.getElementById('referralInsights');
+      const willingToRefer = customers.filter(c => c.referralInterest === 'Yes').length;
+      const totalReferrals = customers.reduce((sum, c) => sum + (c.potentialReferrals || 0), 0);
+      
+      referralInsights.innerHTML = `
+        <div style="padding: 15px;">
+          <div style="font-size: 32px; font-weight: 700; color: #43a047; margin-bottom: 10px;">
+            ${willingToRefer}
+          </div>
+          <div style="color: #666; margin-bottom: 15px;">Customers willing to refer</div>
+          <div style="font-size: 24px; font-weight: 600; color: #2e5940; margin-bottom: 5px;">
+            ${totalReferrals}
+          </div>
+          <div style="color: #666;">Potential referrals</div>
+        </div>
+      `;
+      
+      // Discount Insights
+      const discountInsights = document.getElementById('discountInsights');
+      const wantDiscounts = customers.filter(c => c.discountInterest === 'Yes').length;
+      const percentage = customers.length > 0 ? Math.round((wantDiscounts / customers.length) * 100) : 0;
+      
+      discountInsights.innerHTML = `
+        <div style="padding: 15px;">
+          <div style="font-size: 32px; font-weight: 700; color: #ff6b6b; margin-bottom: 10px;">
+            ${percentage}%
+          </div>
+          <div style="color: #666; margin-bottom: 15px;">Interested in discounts</div>
+          <div style="font-size: 24px; font-weight: 600; color: #2e5940; margin-bottom: 5px;">
+            ${wantDiscounts}
+          </div>
+          <div style="color: #666;">Customers opted in</div>
+        </div>
+      `;
+    }
+
+    // Analytics
+    function renderAnalytics() {
+      const revenueCtx = document.getElementById('revenueChart');
+      if (revenueCtx && revenueCtx.getContext) {
+        const monthlyRevenue = {};
+        orders.forEach(o => {
+          const month = new Date(o.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+          monthlyRevenue[month] = (monthlyRevenue[month] || 0) + (o.total || 0);
+        });
+        
+        new Chart(revenueCtx, {
+          type: 'line',
+          data: {
+            labels: Object.keys(monthlyRevenue),
+            datasets: [{
+              label: 'Revenue',
+              data: Object.values(monthlyRevenue),
+              borderColor: '#66bb6a',
+              backgroundColor: 'rgba(102, 187, 106, 0.1)',
+              tension: 0.4
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: true }
+        });
+      }
+      
+      const statusCtx = document.getElementById('statusChart');
+      if (statusCtx && statusCtx.getContext) {
+        const statusCounts = {};
+        customers.forEach(c => {
+          statusCounts[c.status] = (statusCounts[c.status] || 0) + 1;
+        });
+        
+        new Chart(statusCtx, {
+          type: 'doughnut',
+          data: {
+            labels: Object.keys(statusCounts),
+            datasets: [{
+              data: Object.values(statusCounts),
+              backgroundColor: ['#66bb6a', '#42a5f5', '#ef5350']
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: true }
+        });
+      }
+    }
+
+    // Referral System Functions
+    function renderReferrals() {
+      // Calculate stats
+      const totalReferrals = customers.reduce((sum, c) => sum + (c.referralsMade || 0), 0);
+      const totalCredits = totalReferrals * REFERRAL_CREDIT_AMOUNT;
+      const activeAdvocates = customers.filter(c => (c.referralsMade || 0) > 0).length;
+      
+      // Calculate conversion rate
+      const referredCustomers = customers.filter(c => c.referrer).length;
+      const conversionRate = referredCustomers > 0 ? Math.round((referredCustomers / customers.length) * 100) : 0;
+      
+      // Update stats
+      document.getElementById('totalReferrals').textContent = totalReferrals;
+      document.getElementById('totalCredits').textContent = '$' + totalCredits.toLocaleString();
+      document.getElementById('activeAdvocates').textContent = activeAdvocates;
+      document.getElementById('conversionRate').textContent = conversionRate + '%';
+      
+      // Top Referrers Leaderboard
+      const topReferrers = [...customers]
+        .filter(c => (c.referralsMade || 0) > 0)
+        .sort((a, b) => (b.referralsMade || 0) - (a.referralsMade || 0))
+        .slice(0, 10);
+      
+      const leaderboard = document.getElementById('topReferrersList');
+      if (topReferrers.length > 0) {
+        leaderboard.innerHTML = topReferrers.map((c, index) => {
+          const tier = getReferralTier(c.referralsMade || 0);
+          const tierInfo = getTierInfo(tier);
+          const credits = calculateReferralCredits(c.id);
+          
+          return `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #e8f5e9; cursor: pointer;" onclick="viewReferralInfo(${c.id})">
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="font-size: 20px; font-weight: 700; color: #999; min-width: 30px;">#${index + 1}</div>
+                <div>
+                  <div style="font-weight: 600; color: #2e5940;">${c.name}</div>
+                  <div style="font-size: 12px; color: #666;">
+                    <i class="fas fa-${tierInfo.icon}" style="color: ${tierInfo.color};"></i> ${tierInfo.name}
+                  </div>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-weight: 600; color: #43a047;">${c.referralsMade || 0} referrals</div>
+                <div style="font-size: 12px; color: #666;">$${credits} earned</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        leaderboard.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No referrals yet. Start rewarding your advocates!</p>';
+      }
+      
+      // Recent Referrals Table
+      const recentReferrals = [];
+      customers.forEach(referrer => {
+        if (referrer.referredCustomers && referrer.referredCustomers.length > 0) {
+          referrer.referredCustomers.forEach(ref => {
+            const newCustomer = customers.find(c => {
+              const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+              const refId = typeof ref.customerId === 'string' ? parseInt(ref.customerId) : ref.customerId;
+              return cId === refId;
+            });
+            
+            recentReferrals.push({
+              referrerName: referrer.name,
+              newCustomerName: newCustomer ? newCustomer.name : 'Unknown',
+              date: ref.date,
+              status: newCustomer && newCustomer.status === 'active' ? 'Converted' : 'Pending',
+              credit: ref.creditEarned
+            });
+          });
+        }
+      });
+      
+      recentReferrals.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      const referralsTable = document.getElementById('recentReferralsTable');
+      if (recentReferrals.length > 0) {
+        referralsTable.innerHTML = recentReferrals.slice(0, 20).map(r => `
+          <tr>
+            <td>${r.referrerName}</td>
+            <td>${r.newCustomerName}</td>
+            <td>${new Date(r.date).toLocaleDateString()}</td>
+            <td><span class="status-badge status-${r.status === 'Converted' ? 'active' : 'prospect'}">${r.status}</span></td>
+            <td style="color: #43a047; font-weight: 600;">$${r.credit}</td>
+          </tr>
+        `).join('');
+      } else {
+        referralsTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #999;">No referrals yet</td></tr>';
+      }
+    }
+
+    function viewReferralInfo(customerId) {
+      const numId = typeof customerId === 'string' ? parseInt(customerId) : customerId;
+      const customer = customers.find(c => {
+        const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+        return cId === numId;
+      });
+      
+      if (!customer) return;
+      
+      currentReferralCustomer = customer;
+      const referralCount = customer.referralsMade || 0;
+      const credits = calculateReferralCredits(customer.id);
+      const tier = getReferralTier(referralCount);
+      const tierInfo = getTierInfo(tier);
+      
+      const content = document.getElementById('referralDetailsContent');
+      
+      // Clear any existing QR code
+      const existingQR = document.getElementById('qrcode');
+      if (existingQR) existingQR.innerHTML = '';
+      
+      content.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+          <div>
+            <h4 style="color: #2e5940; margin-bottom: 15px; font-size: 18px;">${customer.name}'s Referral Dashboard</h4>
+            
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+              <div style="font-size: 14px; opacity: 0.9;">Referral Code</div>
+              <div style="font-size: 32px; font-weight: 700; margin: 10px 0; font-family: monospace; letter-spacing: 2px;">
+                ${customer.referralCode || 'N/A'}
+              </div>
+              <button onclick="copyReferralCode('${customer.referralCode}')" class="btn-secondary" style="width: 100%; margin-top: 10px; color: white; border-color: white;">
+                <i class="fas fa-copy"></i> Copy Code
+              </button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+              <div style="background: #c8e6c9; padding: 15px; border-radius: 8px;">
+                <div style="font-size: 12px; color: #2e7d32;">Total Referrals</div>
+                <div style="font-size: 28px; font-weight: 700; color: #2e7d32;">${referralCount}</div>
+              </div>
+              <div style="background: #fff9c4; padding: 15px; border-radius: 8px;">
+                <div style="font-size: 12px; color: #f57f17;">Credits Earned</div>
+                <div style="font-size: 28px; font-weight: 700; color: #f57f17;">$${credits}</div>
+              </div>
+            </div>
+            
+            <div style="background: ${tierInfo.color}15; border-left: 4px solid ${tierInfo.color}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+              <div style="font-size: 12px; color: ${tierInfo.color};">Current Tier</div>
+              <div style="font-size: 24px; font-weight: 700; color: ${tierInfo.color};">
+                <i class="fas fa-${tierInfo.icon}"></i> ${tierInfo.name}
+              </div>
+              ${tier !== 'platinum' ? `
+                <div style="font-size: 12px; color: #666; margin-top: 10px;">
+                  ${REFERRAL_TIERS[tier === 'none' ? 'bronze' : tier === 'bronze' ? 'silver' : tier === 'silver' ? 'gold' : 'platinum'].min - referralCount} more referrals to next tier!
+                </div>
+              ` : '<div style="font-size: 12px; color: #666; margin-top: 10px;">🎉 You\'ve reached the highest tier!</div>'}
+            </div>
+            
+            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px;">
+              <h5 style="color: #2e5940; margin-bottom: 10px;">Share Your Code</h5>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <button onclick="shareViaEmail('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
+                  <i class="fas fa-envelope"></i> Email
+                </button>
+                <button onclick="shareViaSMS('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
+                  <i class="fas fa-sms"></i> SMS
+                </button>
+                <button onclick="shareViaFacebook('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
+                  <i class="fab fa-facebook"></i> Facebook
+                </button>
+                <button onclick="shareViaTwitter('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
+                  <i class="fab fa-twitter"></i> Twitter
+                </button>
+                <button onclick="shareViaWhatsApp('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
+                  <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
+                <button onclick="shareViaLinkedIn('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
+                  <i class="fab fa-linkedin"></i> LinkedIn
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h4 style="color: #2e5940; margin-bottom: 15px; font-size: 18px;">QR Code</h4>
+            <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; border: 2px solid #e8f5e9;">
+              <div id="qrcode" style="display: flex; justify-content: center; margin-bottom: 15px;"></div>
+              <p style="font-size: 14px; color: #666; margin-top: 10px;">Scan to apply referral code</p>
+            </div>
+            
+            <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 20px;">
+              <h5 style="color: #1565c0; margin-bottom: 10px;"><i class="fas fa-info-circle"></i> How It Works</h5>
+              <ol style="font-size: 13px; color: #666; padding-left: 20px; margin: 0;">
+                <li style="margin-bottom: 8px;">Share your referral code with friends</li>
+                <li style="margin-bottom: 8px;">They use your code at checkout</li>
+                <li style="margin-bottom: 8px;">You both get $15 credit!</li>
+                <li>Climb tiers for bigger rewards</li>
+              </ol>
+            </div>
+            
+            ${referralCount > 0 ? `
+              <div style="background: #fff; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #e8f5e9;">
+                <h5 style="color: #2e5940; margin-bottom: 10px;">Your Referrals</h5>
+                ${(customer.referredCustomers || []).map(ref => {
+                  const refCustomer = customers.find(c => {
+                    const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+                    const refId = typeof ref.customerId === 'string' ? parseInt(ref.customerId) : ref.customerId;
+                    return cId === refId;
+                  });
+                  return `
+                    <div style="padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 13px;">
+                      <strong>${refCustomer ? refCustomer.name : 'Customer'}</strong><br>
+                      <span style="color: #666;">${new Date(ref.date).toLocaleDateString()} • $${ref.creditEarned} earned</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+      
+      // Generate QR Code
+      setTimeout(() => {
+        const qrDiv = document.getElementById('qrcode');
+        if (qrDiv && window.QRCode) {
+          new QRCode(qrDiv, {
+            text: `ACOUSTISKIN-REF:${customer.referralCode}`,
+            width: 200,
+            height: 200,
+            colorDark: "#2e5940",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+          });
+        }
+      }, 100);
+      
+      document.getElementById('referralModal').style.display = 'block';
+    }
+
+    // Copy referral code to clipboard
+    function copyReferralCode(code) {
+      navigator.clipboard.writeText(code).then(() => {
+        showNotification('Referral code copied to clipboard!');
+      }).catch(() => {
+        showNotification('Could not copy code');
+      });
+    }
+
+    // Social sharing functions
+    function shareViaEmail(code) {
+      const subject = encodeURIComponent('Get $15 off AcoustiSkin with my referral code!');
+      const body = encodeURIComponent(`Hey! I love my AcoustiSkin paddle cover and thought you might too. Use my referral code "${code}" to get $15 off your first order, and I'll get $15 credit too! Check it out: https://acoustiskin.com/ref/${code}`);
+      window.open(`mailto:?subject=${subject}&body=${body}`);
+    }
+
+    function shareViaSMS(code) {
+      const message = encodeURIComponent(`Get $15 off AcoustiSkin! Use my code: ${code} at https://acoustiskin.com/ref/${code}`);
+      window.open(`sms:?body=${message}`);
+    }
+
+    function shareViaFacebook(code) {
+      const url = encodeURIComponent(`https://acoustiskin.com/ref/${code}`);
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+    }
+
+    function shareViaTwitter(code) {
+      const text = encodeURIComponent(`Love my AcoustiSkin! Get $15 off with code: ${code}`);
+      const url = encodeURIComponent(`https://acoustiskin.com/ref/${code}`);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+    }
+
+    function shareViaWhatsApp(code) {
+      const text = encodeURIComponent(`Get $15 off AcoustiSkin with my code: ${code}! https://acoustiskin.com/ref/${code}`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    function shareViaLinkedIn(code) {
+      const url = encodeURIComponent(`https://acoustiskin.com/ref/${code}`);
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+    }
+
+    // Download referral card
+    function downloadReferralCard() {
+      if (!currentReferralCustomer) return;
+      
+      // Create a simple referral card as HTML and convert to image
+      const card = document.createElement('div');
+      card.style.cssText = `
+        width: 600px;
+        height: 400px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        font-family: Arial, sans-serif;
+        position: absolute;
+        left: -9999px;
+      `;
+      
+      card.innerHTML = `
+        <div style="text-align: center;">
+          <h1 style="font-size: 48px; margin-bottom: 20px;">AcoustiSkin</h1>
+          <h2 style="font-size: 24px; margin-bottom: 30px;">Referral Reward Card</h2>
+          <div style="background: white; color: #2e5940; padding: 30px; border-radius: 15px; margin: 30px 0;">
+            <p style="font-size: 18px; margin-bottom: 10px;">Your Referral Code:</p>
+            <p style="font-size: 42px; font-weight: bold; font-family: monospace; letter-spacing: 3px;">${currentReferralCustomer.referralCode}</p>
+          </div>
+          <p style="font-size: 18px;">Share this code and get $15 credit!</p>
+          <p style="font-size: 14px; margin-top: 20px; opacity: 0.8;">acoustiskin.com/ref/${currentReferralCustomer.referralCode}</p>
+        </div>
+      `;
+      
+      document.body.appendChild(card);
+      
+      // Use html2canvas if available, otherwise create a simple download
+      showNotification('Referral card data prepared! Use screenshot tool to save the QR code.');
+      
+      setTimeout(() => document.body.removeChild(card), 100);
+    }
+
+    // Utilities
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      editingCustomerId = null;
+      editingEventId = null;
+      currentEventId = null;
+    }
+
+    function showNotification(message) {
+      const notif = document.getElementById('notification');
+      document.getElementById('notificationText').textContent = message;
+      notif.style.display = 'block';
+      setTimeout(() => notif.style.display = 'none', 3000);
+    }
+
+    // Initialize on load
+    window.onload = initApp;
+  </script>
 </body>
 </html>

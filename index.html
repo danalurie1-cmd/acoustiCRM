@@ -679,9 +679,14 @@
 
     <!-- Referral Program View -->
     <div id="referrals-view" class="view-content" style="display: none;">
-      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">
-        <i class="fas fa-gift"></i> Referral Program Dashboard
-      </h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 28px; color: #2e5940;">
+          <i class="fas fa-gift"></i> Referral Program Dashboard
+        </h2>
+        <button class="btn-primary" onclick="openReferralSettings()">
+          <i class="fas fa-cog"></i> Program Settings
+        </button>
+      </div>
       
       <div class="info-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
         <strong><i class="fas fa-rocket"></i> Growth Hack Alert!</strong> Referral programs can increase customer acquisition by 300%! Track every referral and reward your advocates.
@@ -727,36 +732,8 @@
           <h3 style="color: #2e5940; margin-bottom: 15px;">
             <i class="fas fa-crown"></i> Reward Tiers
           </h3>
-          <div style="padding: 15px;">
-            <div style="margin-bottom: 15px; padding: 12px; background: #f5f5f5; border-left: 4px solid #cd7f32; border-radius: 6px;">
-              <div style="font-weight: 600; color: #cd7f32;"><i class="fas fa-medal"></i> BRONZE (1-2 referrals)</div>
-              <div style="font-size: 13px; color: #666; margin-top: 5px;">• 10% credit on next purchase</div>
-              <div style="font-size: 13px; color: #666;">• Early access to new designs</div>
-            </div>
-            
-            <div style="margin-bottom: 15px; padding: 12px; background: #f5f5f5; border-left: 4px solid #c0c0c0; border-radius: 6px;">
-              <div style="font-weight: 600; color: #808080;"><i class="fas fa-medal"></i> SILVER (3-5 referrals)</div>
-              <div style="font-size: 13px; color: #666; margin-top: 5px;">• 15% credit on next purchase</div>
-              <div style="font-size: 13px; color: #666;">• Free shipping for life</div>
-              <div style="font-size: 13px; color: #666;">• Exclusive Silver designs</div>
-            </div>
-            
-            <div style="margin-bottom: 15px; padding: 12px; background: #f5f5f5; border-left: 4px solid #ffd700; border-radius: 6px;">
-              <div style="font-weight: 600; color: #b8860b;"><i class="fas fa-medal"></i> GOLD (6-10 referrals)</div>
-              <div style="font-size: 13px; color: #666; margin-top: 5px;">• 25% credit on next purchase</div>
-              <div style="font-size: 13px; color: #666;">• 2 FREE replacement skins/year</div>
-              <div style="font-size: 13px; color: #666;">• Custom design service</div>
-              <div style="font-size: 13px; color: #666;">• VIP support line</div>
-            </div>
-            
-            <div style="padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px;">
-              <div style="font-weight: 600;"><i class="fas fa-gem"></i> PLATINUM (11+ referrals)</div>
-              <div style="font-size: 13px; margin-top: 5px;">• FREE replacement skin EVERY year</div>
-              <div style="font-size: 13px;">• 50% off all purchases</div>
-              <div style="font-size: 13px;">• Lifetime warranty</div>
-              <div style="font-size: 13px;">• Brand ambassador status</div>
-              <div style="font-size: 13px;">• Featured on website</div>
-            </div>
+          <div style="padding: 15px;" id="rewardTiersDisplay">
+            <!-- Tiers will be rendered dynamically -->
           </div>
         </div>
       </div>
@@ -1524,6 +1501,133 @@
     </div>
   </div>
 
+  <!-- Referral Settings Modal (NEW) -->
+  <div id="referralSettingsModal" class="modal">
+    <div class="modal-content" style="max-width: 900px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #2e5940; font-size: 22px;">
+          <i class="fas fa-cog"></i> Referral Program Settings
+        </h3>
+        <button onclick="closeModal('referralSettingsModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+      </div>
+      
+      <div class="info-box">
+        <i class="fas fa-info-circle"></i> <strong>Configure Your Referral Program:</strong> Customize credit amounts, tier thresholds, discounts, and benefits to match your business strategy.
+      </div>
+      
+      <form id="referralSettingsForm" onsubmit="saveReferralSettings(event)">
+        <div class="section-header">
+          <i class="fas fa-dollar-sign"></i> Credit Amount
+        </div>
+        <div class="form-group">
+          <label>Credit Per Referral ($) *</label>
+          <input type="number" id="settingsCreditAmount" min="1" step="0.01" required placeholder="15.00">
+          <small style="color: #666; font-size: 12px;">Amount credited to referrer and new customer per successful referral</small>
+        </div>
+
+        <div class="section-header">
+          <i class="fas fa-medal"></i> Bronze Tier
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Min Referrals *</label>
+            <input type="number" id="settingsBronzeMin" min="1" required>
+          </div>
+          <div class="form-group">
+            <label>Max Referrals *</label>
+            <input type="number" id="settingsBronzeMax" min="1" required>
+          </div>
+          <div class="form-group">
+            <label>Discount (%) *</label>
+            <input type="number" id="settingsBronzeDiscount" min="0" max="100" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Benefits (one per line)</label>
+          <textarea id="settingsBronzeBenefits" rows="3" placeholder="10% credit on next purchase
+Early access to new designs"></textarea>
+        </div>
+
+        <div class="section-header">
+          <i class="fas fa-medal"></i> Silver Tier
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Min Referrals *</label>
+            <input type="number" id="settingsSilverMin" min="1" required>
+          </div>
+          <div class="form-group">
+            <label>Max Referrals *</label>
+            <input type="number" id="settingsSilverMax" min="1" required>
+          </div>
+          <div class="form-group">
+            <label>Discount (%) *</label>
+            <input type="number" id="settingsSilverDiscount" min="0" max="100" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Benefits (one per line)</label>
+          <textarea id="settingsSilverBenefits" rows="3"></textarea>
+        </div>
+
+        <div class="section-header">
+          <i class="fas fa-medal"></i> Gold Tier
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Min Referrals *</label>
+            <input type="number" id="settingsGoldMin" min="1" required>
+          </div>
+          <div class="form-group">
+            <label>Max Referrals *</label>
+            <input type="number" id="settingsGoldMax" min="1" required>
+          </div>
+          <div class="form-group">
+            <label>Discount (%) *</label>
+            <input type="number" id="settingsGoldDiscount" min="0" max="100" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Benefits (one per line)</label>
+          <textarea id="settingsGoldBenefits" rows="4"></textarea>
+        </div>
+
+        <div class="section-header">
+          <i class="fas fa-gem"></i> Platinum Tier
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Min Referrals *</label>
+            <input type="number" id="settingsPlatinumMin" min="1" required>
+          </div>
+          <div class="form-group">
+            <label>Max Referrals *</label>
+            <input type="number" id="settingsPlatinumMax" value="999" readonly style="background: #f5f5f5;">
+            <small style="color: #666; font-size: 11px;">Max is unlimited (999)</small>
+          </div>
+          <div class="form-group">
+            <label>Discount (%) *</label>
+            <input type="number" id="settingsPlatinumDiscount" min="0" max="100" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Benefits (one per line)</label>
+          <textarea id="settingsPlatinumBenefits" rows="5"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button type="button" class="btn-secondary" onclick="resetReferralSettings()">
+            <i class="fas fa-undo"></i> Reset to Defaults
+          </button>
+          <button type="button" class="btn-secondary" onclick="closeModal('referralSettingsModal')">Cancel</button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-save"></i> Save Settings
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     // Global State
     let customers = [];
@@ -1540,13 +1644,15 @@
     let currentReferralCustomer = null;
     let currentTaskFilter = 'all'; // NEW: Current task filter
 
-    // Referral System Configuration
-    const REFERRAL_CREDIT_AMOUNT = 15;
-    const REFERRAL_TIERS = {
-      bronze: { min: 1, max: 2, discount: 0.10, benefits: ['10% credit', 'Early access'] },
-      silver: { min: 3, max: 5, discount: 0.15, benefits: ['15% credit', 'Free shipping', 'Exclusive designs'] },
-      gold: { min: 6, max: 10, discount: 0.25, benefits: ['25% credit', '2 free replacements/year', 'Custom design', 'VIP support'] },
-      platinum: { min: 11, max: 999, discount: 0.50, benefits: ['50% off all purchases', 'FREE annual replacement', 'Lifetime warranty', 'Brand ambassador', 'Website feature'] }
+    // Referral System Configuration (NOW EDITABLE!)
+    let referralSettings = {
+      creditAmount: 15,
+      tiers: {
+        bronze: { min: 1, max: 2, discount: 10, benefits: '10% credit on next purchase\nEarly access to new designs' },
+        silver: { min: 3, max: 5, discount: 15, benefits: '15% credit on next purchase\nFree shipping for life\nExclusive Silver designs' },
+        gold: { min: 6, max: 10, discount: 25, benefits: '25% credit on next purchase\n2 FREE replacement skins/year\nCustom design service\nVIP support line' },
+        platinum: { min: 11, max: 999, discount: 50, benefits: 'FREE replacement skin EVERY year\n50% off all purchases\nLifetime warranty\nBrand ambassador status\nFeatured on website' }
+      }
     };
 
     // Paddle Manufacturers
@@ -1580,10 +1686,11 @@
     }
 
     function getReferralTier(referralCount) {
-      if (referralCount >= REFERRAL_TIERS.platinum.min) return 'platinum';
-      if (referralCount >= REFERRAL_TIERS.gold.min) return 'gold';
-      if (referralCount >= REFERRAL_TIERS.silver.min) return 'silver';
-      if (referralCount >= REFERRAL_TIERS.bronze.min) return 'bronze';
+      const tiers = referralSettings.tiers;
+      if (referralCount >= tiers.platinum.min) return 'platinum';
+      if (referralCount >= tiers.gold.min) return 'gold';
+      if (referralCount >= tiers.silver.min) return 'silver';
+      if (referralCount >= tiers.bronze.min) return 'bronze';
       return 'none';
     }
 
@@ -1607,7 +1714,7 @@
       
       if (!customer) return 0;
       const referralCount = customer.referralsMade || 0;
-      return referralCount * REFERRAL_CREDIT_AMOUNT;
+      return referralCount * referralSettings.creditAmount;
     }
 
     function trackReferral(referrerId, newCustomerId) {
@@ -1626,7 +1733,7 @@
       referrer.referredCustomers.push({
         customerId: newCustomerId,
         date: new Date().toISOString(),
-        creditEarned: REFERRAL_CREDIT_AMOUNT
+        creditEarned: referralSettings.creditAmount
       });
       
       saveData();
@@ -1804,6 +1911,11 @@
         tasks = data.tasks || []; // NEW
         communications = data.communications || []; // NEW
         
+        // Load referral settings or use defaults
+        if (data.referralSettings) {
+          referralSettings = data.referralSettings;
+        }
+        
         let updated = false;
         customers.forEach(customer => {
           if (!customer.referralCode) {
@@ -1825,12 +1937,13 @@
         orders,
         events,
         tasks, // NEW
-        communications // NEW
+        communications, // NEW
+        referralSettings // NEW - Save referral settings
       }));
     }
 
     function exportData() {
-      const data = { customers, orders, events, tasks, communications };
+      const data = { customers, orders, events, tasks, communications, referralSettings };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1853,6 +1966,7 @@
           events = data.events || [];
           tasks = data.tasks || [];
           communications = data.communications || [];
+          referralSettings = data.referralSettings || referralSettings; // Load settings or keep defaults
           saveData();
           initApp();
           showNotification('Data imported successfully!');
@@ -3394,7 +3508,7 @@
     // Referral System
     function renderReferrals() {
       const totalReferrals = customers.reduce((sum, c) => sum + (c.referralsMade || 0), 0);
-      const totalCredits = totalReferrals * REFERRAL_CREDIT_AMOUNT;
+      const totalCredits = totalReferrals * referralSettings.creditAmount;
       const activeAdvocates = customers.filter(c => (c.referralsMade || 0) > 0).length;
       
       const referredCustomers = customers.filter(c => c.referrer).length;
@@ -3476,6 +3590,143 @@
       } else {
         referralsTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #999;">No referrals yet</td></tr>';
       }
+      
+      // Render reward tiers dynamically
+      renderRewardTiers();
+    }
+
+    // Referral Settings Functions (NEW)
+    function openReferralSettings() {
+      document.getElementById('referralSettingsModal').style.display = 'block';
+      
+      // Populate form with current settings
+      document.getElementById('settingsCreditAmount').value = referralSettings.creditAmount;
+      
+      document.getElementById('settingsBronzeMin').value = referralSettings.tiers.bronze.min;
+      document.getElementById('settingsBronzeMax').value = referralSettings.tiers.bronze.max;
+      document.getElementById('settingsBronzeDiscount').value = referralSettings.tiers.bronze.discount;
+      document.getElementById('settingsBronzeBenefits').value = referralSettings.tiers.bronze.benefits;
+      
+      document.getElementById('settingsSilverMin').value = referralSettings.tiers.silver.min;
+      document.getElementById('settingsSilverMax').value = referralSettings.tiers.silver.max;
+      document.getElementById('settingsSilverDiscount').value = referralSettings.tiers.silver.discount;
+      document.getElementById('settingsSilverBenefits').value = referralSettings.tiers.silver.benefits;
+      
+      document.getElementById('settingsGoldMin').value = referralSettings.tiers.gold.min;
+      document.getElementById('settingsGoldMax').value = referralSettings.tiers.gold.max;
+      document.getElementById('settingsGoldDiscount').value = referralSettings.tiers.gold.discount;
+      document.getElementById('settingsGoldBenefits').value = referralSettings.tiers.gold.benefits;
+      
+      document.getElementById('settingsPlatinumMin').value = referralSettings.tiers.platinum.min;
+      document.getElementById('settingsPlatinumMax').value = referralSettings.tiers.platinum.max;
+      document.getElementById('settingsPlatinumDiscount').value = referralSettings.tiers.platinum.discount;
+      document.getElementById('settingsPlatinumBenefits').value = referralSettings.tiers.platinum.benefits;
+    }
+
+    function saveReferralSettings(e) {
+      e.preventDefault();
+      
+      // Validate tier ranges don't overlap incorrectly
+      const bronzeMax = parseInt(document.getElementById('settingsBronzeMax').value);
+      const silverMin = parseInt(document.getElementById('settingsSilverMin').value);
+      const silverMax = parseInt(document.getElementById('settingsSilverMax').value);
+      const goldMin = parseInt(document.getElementById('settingsGoldMin').value);
+      const goldMax = parseInt(document.getElementById('settingsGoldMax').value);
+      const platinumMin = parseInt(document.getElementById('settingsPlatinumMin').value);
+      
+      if (silverMin <= bronzeMax) {
+        alert('Silver minimum must be greater than Bronze maximum!');
+        return;
+      }
+      if (goldMin <= silverMax) {
+        alert('Gold minimum must be greater than Silver maximum!');
+        return;
+      }
+      if (platinumMin <= goldMax) {
+        alert('Platinum minimum must be greater than Gold maximum!');
+        return;
+      }
+      
+      // Update settings
+      referralSettings.creditAmount = parseFloat(document.getElementById('settingsCreditAmount').value);
+      
+      referralSettings.tiers.bronze.min = parseInt(document.getElementById('settingsBronzeMin').value);
+      referralSettings.tiers.bronze.max = bronzeMax;
+      referralSettings.tiers.bronze.discount = parseInt(document.getElementById('settingsBronzeDiscount').value);
+      referralSettings.tiers.bronze.benefits = document.getElementById('settingsBronzeBenefits').value;
+      
+      referralSettings.tiers.silver.min = silverMin;
+      referralSettings.tiers.silver.max = silverMax;
+      referralSettings.tiers.silver.discount = parseInt(document.getElementById('settingsSilverDiscount').value);
+      referralSettings.tiers.silver.benefits = document.getElementById('settingsSilverBenefits').value;
+      
+      referralSettings.tiers.gold.min = goldMin;
+      referralSettings.tiers.gold.max = goldMax;
+      referralSettings.tiers.gold.discount = parseInt(document.getElementById('settingsGoldDiscount').value);
+      referralSettings.tiers.gold.benefits = document.getElementById('settingsGoldBenefits').value;
+      
+      referralSettings.tiers.platinum.min = platinumMin;
+      referralSettings.tiers.platinum.max = 999;
+      referralSettings.tiers.platinum.discount = parseInt(document.getElementById('settingsPlatinumDiscount').value);
+      referralSettings.tiers.platinum.benefits = document.getElementById('settingsPlatinumBenefits').value;
+      
+      saveData();
+      closeModal('referralSettingsModal');
+      renderReferrals(); // Refresh the display
+      showNotification('Referral settings updated successfully!');
+    }
+
+    function resetReferralSettings() {
+      if (confirm('Reset all referral settings to default values? This cannot be undone.')) {
+        referralSettings = {
+          creditAmount: 15,
+          tiers: {
+            bronze: { min: 1, max: 2, discount: 10, benefits: '10% credit on next purchase\nEarly access to new designs' },
+            silver: { min: 3, max: 5, discount: 15, benefits: '15% credit on next purchase\nFree shipping for life\nExclusive Silver designs' },
+            gold: { min: 6, max: 10, discount: 25, benefits: '25% credit on next purchase\n2 FREE replacement skins/year\nCustom design service\nVIP support line' },
+            platinum: { min: 11, max: 999, discount: 50, benefits: 'FREE replacement skin EVERY year\n50% off all purchases\nLifetime warranty\nBrand ambassador status\nFeatured on website' }
+          }
+        };
+        saveData();
+        openReferralSettings(); // Reload the form
+        renderReferrals(); // Refresh the display
+        showNotification('Referral settings reset to defaults!');
+      }
+    }
+
+    function renderRewardTiers() {
+      const container = document.getElementById('rewardTiersDisplay');
+      const tiers = referralSettings.tiers;
+      
+      const tierColors = {
+        bronze: { color: '#cd7f32', bg: '#f5f5f5' },
+        silver: { color: '#808080', bg: '#f5f5f5' },
+        gold: { color: '#b8860b', bg: '#f5f5f5' },
+        platinum: { color: 'white', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }
+      };
+      
+      let html = '';
+      
+      Object.keys(tiers).forEach(tierKey => {
+        const tier = tiers[tierKey];
+        const colors = tierColors[tierKey];
+        const isPlatinum = tierKey === 'platinum';
+        const benefits = tier.benefits.split('\n').filter(b => b.trim());
+        
+        html += `
+          <div style="margin-bottom: 15px; padding: 12px; background: ${isPlatinum ? 'transparent' : colors.bg}; ${isPlatinum ? 'background: ' + colors.bg + ';' : ''} border-left: 4px solid ${isPlatinum ? 'transparent' : colors.color}; border-radius: 6px; ${isPlatinum ? 'color: white;' : ''}">
+            <div style="font-weight: 600; color: ${isPlatinum ? 'white' : colors.color};">
+              <i class="fas fa-${tierKey === 'platinum' ? 'gem' : 'medal'}"></i> 
+              ${tierKey.toUpperCase()} (${tier.min}-${tier.max === 999 ? '∞' : tier.max} referrals)
+            </div>
+            <div style="margin-top: 5px;">
+              ${benefits.map(b => `<div style="font-size: 13px; color: ${isPlatinum ? 'white' : '#666'};">• ${b}</div>`).join('')}
+            </div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
     }
 
     function viewReferralInfo(customerId) {
@@ -3531,7 +3782,12 @@
               </div>
               ${tier !== 'platinum' ? `
                 <div style="font-size: 12px; color: #666; margin-top: 10px;">
-                  ${REFERRAL_TIERS[tier === 'none' ? 'bronze' : tier === 'bronze' ? 'silver' : tier === 'silver' ? 'gold' : 'platinum'].min - referralCount} more referrals to next tier!
+                  ${(() => {
+                    const nextTierKey = tier === 'none' ? 'bronze' : tier === 'bronze' ? 'silver' : tier === 'silver' ? 'gold' : 'platinum';
+                    const nextTierMin = referralSettings.tiers[nextTierKey].min;
+                    const remaining = nextTierMin - referralCount;
+                    return remaining > 0 ? `${remaining} more referrals to next tier!` : 'Congratulations on reaching the next tier!';
+                  })()}
                 </div>
               ` : '<div style="font-size: 12px; color: #666; margin-top: 10px;">🎉 You\'ve reached the highest tier!</div>'}
             </div>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AcoustiSkin CRM - AI-Powered Enterprise Edition</title>
+  <title>AcoustiSkin CRM - Phase 1 Edition</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -68,6 +68,20 @@
     }
     .btn-danger:hover {
       background: #e53935;
+      color: white;
+    }
+    .btn-info {
+      background: white;
+      color: #1e88e5;
+      border: 2px solid #1e88e5;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    .btn-info:hover {
+      background: #1e88e5;
       color: white;
     }
     .nav-item {
@@ -175,6 +189,20 @@
       background: #43a047;
       transform: scale(1.05);
     }
+    .task-item {
+      background: #42a5f5;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      margin-top: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .task-item:hover {
+      background: #1e88e5;
+      transform: scale(1.05);
+    }
     .holiday-item {
       background: #ff6b6b;
       color: white;
@@ -193,6 +221,9 @@
     .status-active { background: #c8e6c9; color: #2e7d32; }
     .status-prospect { background: #bbdefb; color: #1565c0; }
     .status-inactive { background: #ffcdd2; color: #c62828; }
+    .priority-high { background: #ffcdd2; color: #c62828; }
+    .priority-medium { background: #fff9c4; color: #f57f17; }
+    .priority-low { background: #c8e6c9; color: #2e7d32; }
     .notification {
       position: fixed;
       top: 20px;
@@ -277,6 +308,57 @@
       margin: 15px 0;
       font-size: 13px;
     }
+    .timeline {
+      position: relative;
+      padding-left: 30px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #e8f5e9;
+    }
+    .timeline-item {
+      position: relative;
+      padding-bottom: 20px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      top: 5px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #66bb6a;
+      border: 3px solid white;
+      box-shadow: 0 0 0 2px #e8f5e9;
+    }
+    .communication-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 5px;
+    }
+    .comm-call { background: #bbdefb; color: #1565c0; }
+    .comm-email { background: #c8e6c9; color: #2e7d32; }
+    .comm-meeting { background: #fff9c4; color: #f57f17; }
+    .comm-note { background: #f3e5f5; color: #7b1fa2; }
+    .comm-sms { background: #ffcdd2; color: #c62828; }
+    .overdue-badge {
+      background: #ffcdd2;
+      color: #c62828;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-left: 5px;
+    }
   </style>
 </head>
 <body>
@@ -293,7 +375,7 @@
         <i class="fas fa-leaf"></i> AcoustiSkin CRM
       </h1>
       <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 5px;">
-        <span class="ai-badge"><i class="fas fa-brain"></i> AI-Powered</span>
+        <span class="ai-badge"><i class="fas fa-brain"></i> Phase 1 Edition</span>
       </div>
     </div>
     
@@ -306,6 +388,10 @@
       </div>
       <div class="nav-item" onclick="showView('orders')">
         <i class="fas fa-shopping-cart" style="margin-right: 10px;"></i>Orders
+      </div>
+      <div class="nav-item" onclick="showView('tasks')">
+        <i class="fas fa-tasks" style="margin-right: 10px;"></i>Tasks & Reminders
+        <span id="overdueTasksBadge" style="display: none; background: #e53935; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 5px;">0</span>
       </div>
       <div class="nav-item" onclick="showView('calendar')">
         <i class="fas fa-calendar" style="margin-right: 10px;"></i>Calendar
@@ -327,6 +413,9 @@
     <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
       <button class="btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="openCustomerModal()">
         <i class="fas fa-plus"></i> New Customer
+      </button>
+      <button class="btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="openTaskModal()">
+        <i class="fas fa-check-square"></i> New Task
       </button>
       <button class="btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="openEventModal()">
         <i class="fas fa-calendar-plus"></i> Schedule Event
@@ -375,9 +464,9 @@
         </div>
         
         <div class="card" style="background: linear-gradient(135deg, #ab47bc 0%, #8e24aa 100%); color: white;">
-          <div style="font-size: 14px; opacity: 0.9;">Referral Rate</div>
-          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="referralRate">0%</div>
-          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-users"></i> Willing to refer</div>
+          <div style="font-size: 14px; opacity: 0.9;">Pending Tasks</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="pendingTasks">0</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-tasks"></i> Need attention</div>
         </div>
       </div>
 
@@ -390,7 +479,9 @@
         </div>
         
         <div class="card">
-          <h3 style="color: #2e5940; margin-bottom: 15px; font-size: 18px;">Today's Tasks</h3>
+          <h3 style="color: #2e5940; margin-bottom: 15px; font-size: 18px;">
+            Today's Priority
+          </h3>
           <div id="todayTasks"></div>
         </div>
       </div>
@@ -424,6 +515,76 @@
               </tr>
             </thead>
             <tbody id="customersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tasks & Reminders View (NEW) -->
+    <div id="tasks-view" class="view-content" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 28px; color: #2e5940;">
+          <i class="fas fa-tasks"></i> Tasks & Reminders
+        </h2>
+        <button class="btn-primary" onclick="openTaskModal()">
+          <i class="fas fa-plus"></i> Create Task
+        </button>
+      </div>
+      
+      <!-- Task Stats -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div class="card" style="background: linear-gradient(135deg, #e53935 0%, #c62828 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">Overdue</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="overdueTasksCount">0</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-exclamation-triangle"></i> Need immediate action</div>
+        </div>
+        
+        <div class="card" style="background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">Due Today</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="todayTasksCount">0</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-calendar-day"></i> Due by end of day</div>
+        </div>
+        
+        <div class="card" style="background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">This Week</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="weekTasksCount">0</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-calendar-week"></i> Due this week</div>
+        </div>
+        
+        <div class="card" style="background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9;">Completed</div>
+          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="completedTasksCount">0</div>
+          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-check-circle"></i> Well done!</div>
+        </div>
+      </div>
+
+      <!-- Task Filters -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-secondary" onclick="filterTasks('all')" id="filterAll">All Tasks</button>
+          <button class="btn-secondary" onclick="filterTasks('overdue')" id="filterOverdue">Overdue</button>
+          <button class="btn-secondary" onclick="filterTasks('today')" id="filterToday">Today</button>
+          <button class="btn-secondary" onclick="filterTasks('week')" id="filterWeek">This Week</button>
+          <button class="btn-secondary" onclick="filterTasks('high')" id="filterHigh">High Priority</button>
+          <button class="btn-secondary" onclick="filterTasks('completed')" id="filterCompleted">Completed</button>
+        </div>
+      </div>
+
+      <!-- Tasks Table -->
+      <div class="card">
+        <div style="overflow-x: auto;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Customer</th>
+                <th>Due Date</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tasksTableBody"></tbody>
           </table>
         </div>
       </div>
@@ -489,7 +650,7 @@
       </div>
     </div>
 
-    <!-- Marketing View (NEW) -->
+    <!-- Marketing View -->
     <div id="marketing-view" class="view-content" style="display: none;">
       <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">Marketing Intelligence</h2>
       
@@ -516,7 +677,7 @@
       </div>
     </div>
 
-    <!-- Referral Program View (NEW) -->
+    <!-- Referral Program View -->
     <div id="referrals-view" class="view-content" style="display: none;">
       <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">
         <i class="fas fa-gift"></i> Referral Program Dashboard
@@ -553,7 +714,7 @@
         </div>
       </div>
 
-      <!-- Top Referrers Leaderboard -->
+      <!-- Top Referrers & Tiers -->
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
         <div class="card">
           <h3 style="color: #2e5940; margin-bottom: 15px;">
@@ -644,7 +805,148 @@
     </div>
   </main>
 
-  <!-- Enhanced Customer Modal -->
+  <!-- Customer Detail Modal (NEW - Enhanced with Communications & Purchase History) -->
+  <div id="customerDetailModal" class="modal">
+    <div class="modal-content" style="max-width: 1400px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #2e5940; font-size: 22px;" id="customerDetailName">Customer Details</h3>
+        <button onclick="closeModal('customerDetailModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+      </div>
+      
+      <div id="customerDetailContent"></div>
+      
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+        <button class="btn-secondary" onclick="closeModal('customerDetailModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Communication Modal (NEW) -->
+  <div id="communicationModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #2e5940; font-size: 22px;">Log Communication</h3>
+        <button onclick="closeModal('communicationModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+      </div>
+      
+      <form id="communicationForm" onsubmit="saveCommunication(event)">
+        <input type="hidden" id="commCustomerId">
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Communication Type *</label>
+            <select id="commType" required>
+              <option value="call">Phone Call</option>
+              <option value="email">Email</option>
+              <option value="meeting">Meeting</option>
+              <option value="note">Note</option>
+              <option value="sms">SMS/Text</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Date & Time *</label>
+            <input type="datetime-local" id="commDateTime" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Subject/Title *</label>
+          <input type="text" id="commSubject" required placeholder="e.g., Follow-up on product inquiry">
+        </div>
+        
+        <div class="form-group">
+          <label>Notes/Details *</label>
+          <textarea id="commNotes" rows="5" required placeholder="Details of the communication..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Outcome/Next Steps</label>
+          <input type="text" id="commOutcome" placeholder="e.g., Customer interested, follow up next week">
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('communicationModal')">Cancel</button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-save"></i> Save Communication
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Task Modal (NEW) -->
+  <div id="taskModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #2e5940; font-size: 22px;" id="taskModalTitle">Create Task</h3>
+        <button onclick="closeModal('taskModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+      </div>
+      
+      <form id="taskForm" onsubmit="saveTask(event)">
+        <input type="hidden" id="taskId">
+        
+        <div class="form-group">
+          <label>Task Title *</label>
+          <input type="text" id="taskTitle" required placeholder="e.g., Follow up with customer">
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Related Customer</label>
+            <select id="taskCustomer">
+              <option value="">None</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Priority *</label>
+            <select id="taskPriority" required>
+              <option value="high">High Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="low">Low Priority</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Due Date *</label>
+            <input type="date" id="taskDueDate" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Due Time</label>
+            <input type="time" id="taskDueTime">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="taskDescription" rows="4" placeholder="Task details and notes..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="taskCompleted" style="width: auto;">
+            <span style="font-weight: normal;">Mark as completed</span>
+          </label>
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
+          <button type="button" class="btn-danger" id="deleteTaskBtn" style="display: none; margin-right: auto;" onclick="deleteTask()">
+            <i class="fas fa-trash"></i> Delete Task
+          </button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-save"></i> Save Task
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Customer Modal (keeping existing) -->
   <div id="customerModal" class="modal">
     <div class="modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -981,7 +1283,7 @@
     </div>
   </div>
 
-  <!-- Order Modal (Same as before with minor enhancements) -->
+  <!-- Order Modal -->
   <div id="orderModal" class="modal">
     <div class="modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -1114,7 +1416,7 @@
     </div>
   </div>
 
-  <!-- Event Modal (same as before) -->
+  <!-- Event Modal -->
   <div id="eventModal" class="modal">
     <div class="modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -1201,7 +1503,7 @@
     </div>
   </div>
 
-  <!-- Referral Details Modal (NEW) -->
+  <!-- Referral Details Modal -->
   <div id="referralModal" class="modal">
     <div class="modal-content" style="max-width: 800px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -1227,15 +1529,19 @@
     let customers = [];
     let orders = [];
     let events = [];
+    let tasks = []; // NEW: Tasks array
+    let communications = []; // NEW: Communications array
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
     let editingCustomerId = null;
     let editingEventId = null;
+    let editingTaskId = null; // NEW
     let currentEventId = null;
     let currentReferralCustomer = null;
+    let currentTaskFilter = 'all'; // NEW: Current task filter
 
     // Referral System Configuration
-    const REFERRAL_CREDIT_AMOUNT = 15; // $15 credit per successful referral
+    const REFERRAL_CREDIT_AMOUNT = 15;
     const REFERRAL_TIERS = {
       bronze: { min: 1, max: 2, discount: 0.10, benefits: ['10% credit', 'Early access'] },
       silver: { min: 3, max: 5, discount: 0.15, benefits: ['15% credit', 'Free shipping', 'Exclusive designs'] },
@@ -1243,75 +1549,7 @@
       platinum: { min: 11, max: 999, discount: 0.50, benefits: ['50% off all purchases', 'FREE annual replacement', 'Lifetime warranty', 'Brand ambassador', 'Website feature'] }
     };
 
-    // Generate Unique Referral Code
-    function generateReferralCode(customerName) {
-      const cleanName = customerName.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 5);
-      const random = Math.floor(1000 + Math.random() * 9000);
-      return `ACOUS-${cleanName}-${random}`;
-    }
-
-    // Get Referral Tier
-    function getReferralTier(referralCount) {
-      if (referralCount >= REFERRAL_TIERS.platinum.min) return 'platinum';
-      if (referralCount >= REFERRAL_TIERS.gold.min) return 'gold';
-      if (referralCount >= REFERRAL_TIERS.silver.min) return 'silver';
-      if (referralCount >= REFERRAL_TIERS.bronze.min) return 'bronze';
-      return 'none';
-    }
-
-    // Get Tier Display Info
-    function getTierInfo(tier) {
-      const tierColors = {
-        platinum: { color: '#667eea', icon: 'gem', name: 'PLATINUM' },
-        gold: { color: '#ffd700', icon: 'medal', name: 'GOLD' },
-        silver: { color: '#c0c0c0', icon: 'medal', name: 'SILVER' },
-        bronze: { color: '#cd7f32', icon: 'medal', name: 'BRONZE' },
-        none: { color: '#999', icon: 'user', name: 'STARTER' }
-      };
-      return tierColors[tier] || tierColors.none;
-    }
-
-    // Calculate Referral Credits
-    function calculateReferralCredits(customerId) {
-      const customer = customers.find(c => {
-        const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
-        const targetId = typeof customerId === 'string' ? parseInt(customerId) : customerId;
-        return cId === targetId;
-      });
-      
-      if (!customer) return 0;
-      
-      const referralCount = customer.referralsMade || 0;
-      return referralCount * REFERRAL_CREDIT_AMOUNT;
-    }
-
-    // Track Referral
-    function trackReferral(referrerId, newCustomerId) {
-      // Find referrer
-      const referrer = customers.find(c => {
-        const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
-        const targetId = typeof referrerId === 'string' ? parseInt(referrerId) : referrerId;
-        return cId === targetId;
-      });
-      
-      if (!referrer) return;
-      
-      // Initialize referral tracking
-      if (!referrer.referralsMade) referrer.referralsMade = 0;
-      if (!referrer.referredCustomers) referrer.referredCustomers = [];
-      
-      // Add referral
-      referrer.referralsMade++;
-      referrer.referredCustomers.push({
-        customerId: newCustomerId,
-        date: new Date().toISOString(),
-        creditEarned: REFERRAL_CREDIT_AMOUNT
-      });
-      
-      saveData();
-    }
-
-    // Pickleball Paddle Manufacturers (Alphabetically)
+    // Paddle Manufacturers
     const paddleManufacturers = [
       'Bantam', 'Bread & Butter', 'Babolat', 'Champion Sports', 'CRBN', 'Diadem',
       'Engage', 'Electrum', 'Franklin Sports', 'Gamma', 'Head', 'Holbrook',
@@ -1320,7 +1558,7 @@
       'Six Zero', 'Tmpr Sports', 'Vulcan', 'Wilson', 'YONEX'
     ];
 
-    // US State Sales Tax Rates (2024)
+    // US State Sales Tax Rates
     const stateTaxRates = {
       'AL': 0.04, 'AK': 0.00, 'AZ': 0.056, 'AR': 0.065, 'CA': 0.0725,
       'CO': 0.029, 'CT': 0.0635, 'DE': 0.00, 'FL': 0.06, 'GA': 0.04,
@@ -1334,81 +1572,115 @@
       'VA': 0.053, 'WA': 0.065, 'WV': 0.06, 'WI': 0.05, 'WY': 0.04
     };
 
-    // Dynamic US Federal Holidays Calculator
+    // Referral System Functions
+    function generateReferralCode(customerName) {
+      const cleanName = customerName.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 5);
+      const random = Math.floor(1000 + Math.random() * 9000);
+      return `ACOUS-${cleanName}-${random}`;
+    }
+
+    function getReferralTier(referralCount) {
+      if (referralCount >= REFERRAL_TIERS.platinum.min) return 'platinum';
+      if (referralCount >= REFERRAL_TIERS.gold.min) return 'gold';
+      if (referralCount >= REFERRAL_TIERS.silver.min) return 'silver';
+      if (referralCount >= REFERRAL_TIERS.bronze.min) return 'bronze';
+      return 'none';
+    }
+
+    function getTierInfo(tier) {
+      const tierColors = {
+        platinum: { color: '#667eea', icon: 'gem', name: 'PLATINUM' },
+        gold: { color: '#ffd700', icon: 'medal', name: 'GOLD' },
+        silver: { color: '#c0c0c0', icon: 'medal', name: 'SILVER' },
+        bronze: { color: '#cd7f32', icon: 'medal', name: 'BRONZE' },
+        none: { color: '#999', icon: 'user', name: 'STARTER' }
+      };
+      return tierColors[tier] || tierColors.none;
+    }
+
+    function calculateReferralCredits(customerId) {
+      const customer = customers.find(c => {
+        const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+        const targetId = typeof customerId === 'string' ? parseInt(customerId) : customerId;
+        return cId === targetId;
+      });
+      
+      if (!customer) return 0;
+      const referralCount = customer.referralsMade || 0;
+      return referralCount * REFERRAL_CREDIT_AMOUNT;
+    }
+
+    function trackReferral(referrerId, newCustomerId) {
+      const referrer = customers.find(c => {
+        const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+        const targetId = typeof referrerId === 'string' ? parseInt(referrerId) : referrerId;
+        return cId === targetId;
+      });
+      
+      if (!referrer) return;
+      
+      if (!referrer.referralsMade) referrer.referralsMade = 0;
+      if (!referrer.referredCustomers) referrer.referredCustomers = [];
+      
+      referrer.referralsMade++;
+      referrer.referredCustomers.push({
+        customerId: newCustomerId,
+        date: new Date().toISOString(),
+        creditEarned: REFERRAL_CREDIT_AMOUNT
+      });
+      
+      saveData();
+    }
+
+    // Holiday Calculator
     function getUSHolidays(year) {
       const holidays = {};
-      
-      // New Year's Day - January 1
       holidays[`${year}-01-01`] = 'New Year\'s Day';
       
-      // Martin Luther King Jr. Day - Third Monday in January
-      const mlkDay = getNthWeekdayOfMonth(year, 0, 1, 3); // January (0), Monday (1), 3rd occurrence
+      const mlkDay = getNthWeekdayOfMonth(year, 0, 1, 3);
       holidays[formatDate(mlkDay)] = 'Martin Luther King Jr. Day';
       
-      // Presidents' Day - Third Monday in February
-      const presidentsDay = getNthWeekdayOfMonth(year, 1, 1, 3); // February (1), Monday (1), 3rd
+      const presidentsDay = getNthWeekdayOfMonth(year, 1, 1, 3);
       holidays[formatDate(presidentsDay)] = 'Presidents\' Day';
       
-      // Memorial Day - Last Monday in May
-      const memorialDay = getLastWeekdayOfMonth(year, 4, 1); // May (4), Monday (1)
+      const memorialDay = getLastWeekdayOfMonth(year, 4, 1);
       holidays[formatDate(memorialDay)] = 'Memorial Day';
       
-      // Juneteenth - June 19 (became federal holiday in 2021)
-      if (year >= 2021) {
-        holidays[`${year}-06-19`] = 'Juneteenth';
-      }
-      
-      // Independence Day - July 4
+      if (year >= 2021) holidays[`${year}-06-19`] = 'Juneteenth';
       holidays[`${year}-07-04`] = 'Independence Day';
       
-      // Labor Day - First Monday in September
-      const laborDay = getNthWeekdayOfMonth(year, 8, 1, 1); // September (8), Monday (1), 1st
+      const laborDay = getNthWeekdayOfMonth(year, 8, 1, 1);
       holidays[formatDate(laborDay)] = 'Labor Day';
       
-      // Columbus Day - Second Monday in October
-      const columbusDay = getNthWeekdayOfMonth(year, 9, 1, 2); // October (9), Monday (1), 2nd
+      const columbusDay = getNthWeekdayOfMonth(year, 9, 1, 2);
       holidays[formatDate(columbusDay)] = 'Columbus Day';
       
-      // Veterans Day - November 11
       holidays[`${year}-11-11`] = 'Veterans Day';
       
-      // Thanksgiving - Fourth Thursday in November
-      const thanksgiving = getNthWeekdayOfMonth(year, 10, 4, 4); // November (10), Thursday (4), 4th
+      const thanksgiving = getNthWeekdayOfMonth(year, 10, 4, 4);
       holidays[formatDate(thanksgiving)] = 'Thanksgiving';
       
-      // Christmas Day - December 25
       holidays[`${year}-12-25`] = 'Christmas Day';
       
       return holidays;
     }
     
-    // Helper: Get nth occurrence of a weekday in a month
     function getNthWeekdayOfMonth(year, month, weekday, n) {
       const firstDay = new Date(year, month, 1);
       const firstWeekday = firstDay.getDay();
-      
-      // Calculate days until first occurrence of target weekday
       let daysUntilWeekday = (weekday - firstWeekday + 7) % 7;
-      
-      // Add weeks to get to nth occurrence
       const targetDate = 1 + daysUntilWeekday + (n - 1) * 7;
-      
       return new Date(year, month, targetDate);
     }
     
-    // Helper: Get last occurrence of a weekday in a month
     function getLastWeekdayOfMonth(year, month, weekday) {
       const lastDay = new Date(year, month + 1, 0);
       const lastDate = lastDay.getDate();
       const lastWeekday = lastDay.getDay();
-      
-      // Calculate days back from last day to target weekday
       let daysBack = (lastWeekday - weekday + 7) % 7;
-      
       return new Date(year, month, lastDate - daysBack);
     }
     
-    // Helper: Format date as YYYY-MM-DD
     function formatDate(date) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1424,21 +1696,23 @@
       renderDashboard();
       renderCustomers();
       renderOrders();
+      renderTasks(); // NEW
       renderCalendar();
       renderAnalytics();
       renderMarketing();
+      checkTaskNotifications(); // NEW: Check for overdue tasks
       
-      // Auto-calculate order totals
       document.getElementById('orderQuantity').addEventListener('input', calculateOrderTotal);
       document.getElementById('orderPrice').addEventListener('input', calculateOrderTotal);
       document.getElementById('orderShipping').addEventListener('input', calculateOrderTotal);
       
-      // Set default dates
       document.getElementById('orderDate').valueAsDate = new Date();
       document.getElementById('eventDate').valueAsDate = new Date();
+      
+      // Set up task notifications check every minute
+      setInterval(checkTaskNotifications, 60000);
     }
 
-    // Populate dropdowns
     function populateManufacturers() {
       const select1 = document.getElementById('orderManufacturer');
       const select2 = document.getElementById('customerPaddleBrand');
@@ -1458,36 +1732,28 @@
 
     // AI-Powered Customer Scoring
     function calculateCustomerScore(customer) {
-      let score = 50; // Base score
+      let score = 50;
       
-      // Lead source quality
       const highQualitySources = ['Friend Referral', 'Tournament/Event', 'Pickleball Court'];
       if (highQualitySources.includes(customer.leadSource)) score += 15;
       
-      // Social media presence
       const socialCount = (customer.socialPlatforms || []).length;
       score += socialCount * 3;
       
-      // Engagement level
       if (customer.socialEngagement === 'Very Active') score += 10;
       else if (customer.socialEngagement === 'Active') score += 7;
       
-      // Communication preferences
       if (customer.emailOptIn) score += 5;
       if (customer.smsOptIn) score += 5;
       
-      // Referral potential
       if (customer.referralInterest === 'Yes') score += 10;
       score += (customer.potentialReferrals || 0) * 2;
       
-      // Discount interest (indicates buying intent)
       if (customer.discountInterest === 'Yes') score += 5;
       
-      // Playing frequency (indicates commitment)
       if (customer.playFrequency === 'Daily') score += 10;
       else if (customer.playFrequency === '3-5 times/week') score += 7;
       
-      // Cap at 100
       return Math.min(100, score);
     }
 
@@ -1503,7 +1769,7 @@
       return 'Needs Nurturing';
     }
 
-    // Calculate order totals with tax
+    // Calculate order totals
     function calculateOrderTotal() {
       const qty = parseFloat(document.getElementById('orderQuantity').value) || 0;
       const price = parseFloat(document.getElementById('orderPrice').value) || 0;
@@ -1529,14 +1795,15 @@
 
     // Data Management
     function loadData() {
-      const saved = localStorage.getItem('acoustiskinCRM_AI');
+      const saved = localStorage.getItem('acoustiskinCRM_Phase1');
       if (saved) {
         const data = JSON.parse(saved);
         customers = data.customers || [];
         orders = data.orders || [];
         events = data.events || [];
+        tasks = data.tasks || []; // NEW
+        communications = data.communications || []; // NEW
         
-        // Initialize referral codes for existing customers
         let updated = false;
         customers.forEach(customer => {
           if (!customer.referralCode) {
@@ -1548,27 +1815,27 @@
           }
         });
         
-        if (updated) {
-          saveData();
-        }
+        if (updated) saveData();
       }
     }
 
     function saveData() {
-      localStorage.setItem('acoustiskinCRM_AI', JSON.stringify({
+      localStorage.setItem('acoustiskinCRM_Phase1', JSON.stringify({
         customers,
         orders,
-        events
+        events,
+        tasks, // NEW
+        communications // NEW
       }));
     }
 
     function exportData() {
-      const data = { customers, orders, events };
+      const data = { customers, orders, events, tasks, communications };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `acoustiskin-crm-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `acoustiskin-crm-phase1-backup-${new Date().toISOString().split('T')[0]}.json`;
       a.click();
       showNotification('Data exported successfully!');
     }
@@ -1584,6 +1851,8 @@
           customers = data.customers || [];
           orders = data.orders || [];
           events = data.events || [];
+          tasks = data.tasks || [];
+          communications = data.communications || [];
           saveData();
           initApp();
           showNotification('Data imported successfully!');
@@ -1602,17 +1871,527 @@
       document.getElementById(viewName + '-view').style.display = 'block';
       event.target.closest('.nav-item').classList.add('active');
       
-      // Refresh view data
       switch(viewName) {
         case 'dashboard': renderDashboard(); break;
         case 'customers': renderCustomers(); break;
         case 'orders': renderOrders(); break;
+        case 'tasks': renderTasks(); break; // NEW
         case 'calendar': renderCalendar(); break;
+        case 'pipeline': renderPipeline(); break; // FIXED
         case 'analytics': renderAnalytics(); break;
         case 'marketing': renderMarketing(); break;
         case 'referrals': renderReferrals(); break;
       }
     }
+
+    // ============================================
+    // PHASE 1 NEW FEATURES
+    // ============================================
+
+    // TASK MANAGEMENT FUNCTIONS
+    function checkTaskNotifications() {
+      const today = new Date().toISOString().split('T')[0];
+      const overdueTasks = tasks.filter(t => !t.completed && t.dueDate < today);
+      
+      // Update badge
+      const badge = document.getElementById('overdueTasksBadge');
+      if (overdueTasks.length > 0) {
+        badge.textContent = overdueTasks.length;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function openTaskModal(id = null) {
+      editingTaskId = id;
+      document.getElementById('taskModal').style.display = 'block';
+      updateOrderCustomerDropdown();
+      
+      if (id) {
+        const numId = typeof id === 'string' ? parseInt(id) : id;
+        const task = tasks.find(t => {
+          const tId = typeof t.id === 'string' ? parseInt(t.id) : t.id;
+          return tId === numId;
+        });
+        
+        if (!task) return;
+        
+        document.getElementById('taskModalTitle').textContent = 'Edit Task';
+        document.getElementById('taskId').value = task.id;
+        document.getElementById('taskTitle').value = task.title || '';
+        document.getElementById('taskCustomer').value = task.customerId || '';
+        document.getElementById('taskPriority').value = task.priority || 'medium';
+        document.getElementById('taskDueDate').value = task.dueDate || '';
+        document.getElementById('taskDueTime').value = task.dueTime || '';
+        document.getElementById('taskDescription').value = task.description || '';
+        document.getElementById('taskCompleted').checked = task.completed || false;
+        document.getElementById('deleteTaskBtn').style.display = 'block';
+      } else {
+        document.getElementById('taskModalTitle').textContent = 'Create Task';
+        document.getElementById('taskForm').reset();
+        document.getElementById('taskId').value = '';
+        document.getElementById('taskDueDate').valueAsDate = new Date();
+        document.getElementById('deleteTaskBtn').style.display = 'none';
+      }
+    }
+
+    function saveTask(e) {
+      e.preventDefault();
+      
+      const task = {
+        id: editingTaskId || Date.now(),
+        title: document.getElementById('taskTitle').value,
+        customerId: parseInt(document.getElementById('taskCustomer').value) || null,
+        priority: document.getElementById('taskPriority').value,
+        dueDate: document.getElementById('taskDueDate').value,
+        dueTime: document.getElementById('taskDueTime').value,
+        description: document.getElementById('taskDescription').value,
+        completed: document.getElementById('taskCompleted').checked,
+        createdAt: editingTaskId ? (tasks.find(t => {
+          const tId = typeof t.id === 'string' ? parseInt(t.id) : t.id;
+          const targetId = typeof editingTaskId === 'string' ? parseInt(editingTaskId) : editingTaskId;
+          return tId === targetId;
+        })?.createdAt || new Date().toISOString()) : new Date().toISOString()
+      };
+      
+      if (editingTaskId) {
+        const numId = typeof editingTaskId === 'string' ? parseInt(editingTaskId) : editingTaskId;
+        const index = tasks.findIndex(t => {
+          const tId = typeof t.id === 'string' ? parseInt(t.id) : t.id;
+          return tId === numId;
+        });
+        if (index !== -1) {
+          tasks[index] = task;
+        }
+      } else {
+        tasks.push(task);
+      }
+      
+      saveData();
+      closeModal('taskModal');
+      renderTasks();
+      renderDashboard();
+      renderCalendar();
+      checkTaskNotifications();
+      showNotification('Task saved successfully!');
+    }
+
+    function deleteTask() {
+      if (!editingTaskId) return;
+      
+      if (confirm('Are you sure you want to delete this task?')) {
+        const numId = typeof editingTaskId === 'string' ? parseInt(editingTaskId) : editingTaskId;
+        tasks = tasks.filter(t => {
+          const tId = typeof t.id === 'string' ? parseInt(t.id) : t.id;
+          return tId !== numId;
+        });
+        saveData();
+        closeModal('taskModal');
+        renderTasks();
+        renderDashboard();
+        renderCalendar();
+        checkTaskNotifications();
+        showNotification('Task deleted successfully');
+      }
+    }
+
+    function toggleTaskComplete(taskId) {
+      const numId = typeof taskId === 'string' ? parseInt(taskId) : taskId;
+      const task = tasks.find(t => {
+        const tId = typeof t.id === 'string' ? parseInt(t.id) : t.id;
+        return tId === numId;
+      });
+      
+      if (task) {
+        task.completed = !task.completed;
+        saveData();
+        renderTasks();
+        renderDashboard();
+        checkTaskNotifications();
+        showNotification(task.completed ? 'Task completed! 🎉' : 'Task marked as incomplete');
+      }
+    }
+
+    function filterTasks(filter) {
+      currentTaskFilter = filter;
+      
+      // Update button styles
+      document.querySelectorAll('#tasks-view .btn-secondary').forEach(btn => {
+        btn.style.background = 'white';
+        btn.style.color = '#43a047';
+      });
+      
+      const activeBtn = document.getElementById('filter' + filter.charAt(0).toUpperCase() + filter.slice(1));
+      if (activeBtn) {
+        activeBtn.style.background = '#43a047';
+        activeBtn.style.color = 'white';
+      }
+      
+      renderTasks();
+    }
+
+    function renderTasks() {
+      const today = new Date().toISOString().split('T')[0];
+      const weekFromNow = new Date();
+      weekFromNow.setDate(weekFromNow.getDate() + 7);
+      const weekFromNowStr = weekFromNow.toISOString().split('T')[0];
+      
+      // Calculate stats
+      const overdueTasks = tasks.filter(t => !t.completed && t.dueDate < today);
+      const todayTasks = tasks.filter(t => !t.completed && t.dueDate === today);
+      const weekTasks = tasks.filter(t => !t.completed && t.dueDate > today && t.dueDate <= weekFromNowStr);
+      const completedTasks = tasks.filter(t => t.completed);
+      
+      document.getElementById('overdueTasksCount').textContent = overdueTasks.length;
+      document.getElementById('todayTasksCount').textContent = todayTasks.length;
+      document.getElementById('weekTasksCount').textContent = weekTasks.length;
+      document.getElementById('completedTasksCount').textContent = completedTasks.length;
+      
+      // Filter tasks based on current filter
+      let filteredTasks = tasks;
+      switch(currentTaskFilter) {
+        case 'overdue':
+          filteredTasks = overdueTasks;
+          break;
+        case 'today':
+          filteredTasks = todayTasks;
+          break;
+        case 'week':
+          filteredTasks = weekTasks;
+          break;
+        case 'high':
+          filteredTasks = tasks.filter(t => !t.completed && t.priority === 'high');
+          break;
+        case 'completed':
+          filteredTasks = completedTasks;
+          break;
+        default:
+          filteredTasks = tasks.filter(t => !t.completed);
+      }
+      
+      // Sort by due date
+      filteredTasks.sort((a, b) => {
+        if (a.completed !== b.completed) return a.completed ? 1 : -1;
+        return new Date(a.dueDate) - new Date(b.dueDate);
+      });
+      
+      const tbody = document.getElementById('tasksTableBody');
+      if (filteredTasks.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #999;">No tasks found. Create your first task!</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = filteredTasks.map(t => {
+        const customer = t.customerId ? customers.find(c => {
+          const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+          const taskCustId = typeof t.customerId === 'string' ? parseInt(t.customerId) : t.customerId;
+          return cId === taskCustId;
+        }) : null;
+        
+        const isOverdue = !t.completed && t.dueDate < today;
+        const dueDisplay = new Date(t.dueDate).toLocaleDateString() + (t.dueTime ? ' ' + t.dueTime : '');
+        
+        return `
+          <tr style="${t.completed ? 'opacity: 0.6;' : ''}">
+            <td>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" ${t.completed ? 'checked' : ''} 
+                       onchange="toggleTaskComplete(${t.id})" 
+                       style="cursor: pointer; width: 18px; height: 18px;">
+                <div>
+                  <div style="font-weight: 600; ${t.completed ? 'text-decoration: line-through;' : ''}">${t.title}</div>
+                  ${t.description ? `<div style="font-size: 12px; color: #666;">${t.description.substring(0, 50)}${t.description.length > 50 ? '...' : ''}</div>` : ''}
+                </div>
+              </div>
+            </td>
+            <td>${customer ? customer.name : '-'}</td>
+            <td>
+              ${dueDisplay}
+              ${isOverdue ? '<span class="overdue-badge">OVERDUE</span>' : ''}
+            </td>
+            <td><span class="status-badge priority-${t.priority}">${t.priority.toUpperCase()}</span></td>
+            <td><span class="status-badge status-${t.completed ? 'active' : 'prospect'}">${t.completed ? 'Completed' : 'Pending'}</span></td>
+            <td>
+              <button class="btn-secondary" onclick="openTaskModal(${t.id})" style="margin-right: 5px;">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <button class="btn-danger" onclick="deleteTaskFromTable(${t.id})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function deleteTaskFromTable(taskId) {
+      if (confirm('Are you sure you want to delete this task?')) {
+        const numId = typeof taskId === 'string' ? parseInt(taskId) : taskId;
+        tasks = tasks.filter(t => {
+          const tId = typeof t.id === 'string' ? parseInt(t.id) : t.id;
+          return tId !== numId;
+        });
+        saveData();
+        renderTasks();
+        renderDashboard();
+        checkTaskNotifications();
+        showNotification('Task deleted successfully');
+      }
+    }
+
+    // COMMUNICATION HISTORY FUNCTIONS
+    function openCommunicationModal(customerId) {
+      document.getElementById('commCustomerId').value = customerId;
+      document.getElementById('communicationModal').style.display = 'block';
+      document.getElementById('communicationForm').reset();
+      document.getElementById('commCustomerId').value = customerId;
+      
+      // Set current date/time
+      const now = new Date();
+      const dateTimeStr = now.toISOString().slice(0, 16);
+      document.getElementById('commDateTime').value = dateTimeStr;
+    }
+
+    function saveCommunication(e) {
+      e.preventDefault();
+      
+      const comm = {
+        id: Date.now(),
+        customerId: parseInt(document.getElementById('commCustomerId').value),
+        type: document.getElementById('commType').value,
+        dateTime: document.getElementById('commDateTime').value,
+        subject: document.getElementById('commSubject').value,
+        notes: document.getElementById('commNotes').value,
+        outcome: document.getElementById('commOutcome').value,
+        createdAt: new Date().toISOString()
+      };
+      
+      communications.push(comm);
+      saveData();
+      closeModal('communicationModal');
+      showNotification('Communication logged successfully!');
+      
+      // If customer detail modal is open, refresh it
+      const detailModal = document.getElementById('customerDetailModal');
+      if (detailModal.style.display === 'block') {
+        viewCustomerDetail(comm.customerId);
+      }
+    }
+
+    function getCustomerCommunications(customerId) {
+      const numId = typeof customerId === 'string' ? parseInt(customerId) : customerId;
+      return communications.filter(c => {
+        const cCustId = typeof c.customerId === 'string' ? parseInt(c.customerId) : c.customerId;
+        return cCustId === numId;
+      }).sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+    }
+
+    function deleteCommunication(commId) {
+      if (confirm('Are you sure you want to delete this communication record?')) {
+        const numId = typeof commId === 'string' ? parseInt(commId) : commId;
+        communications = communications.filter(c => {
+          const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+          return cId !== numId;
+        });
+        saveData();
+        showNotification('Communication deleted');
+        
+        // Refresh customer detail if open
+        const detailModal = document.getElementById('customerDetailModal');
+        if (detailModal.style.display === 'block') {
+          const custId = parseInt(document.getElementById('commCustomerId').value);
+          viewCustomerDetail(custId);
+        }
+      }
+    }
+
+    // CUSTOMER DETAIL VIEW (with Communications & Purchase History)
+    function viewCustomerDetail(customerId) {
+      const numId = typeof customerId === 'string' ? parseInt(customerId) : customerId;
+      const customer = customers.find(c => {
+        const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+        return cId === numId;
+      });
+      
+      if (!customer) return;
+      
+      // Get customer data
+      const customerOrders = orders.filter(o => {
+        const oCustId = typeof o.customerId === 'string' ? parseInt(o.customerId) : o.customerId;
+        return oCustId === numId;
+      }).sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      const customerComms = getCustomerCommunications(numId);
+      const customerTasks = tasks.filter(t => {
+        const tCustId = typeof t.customerId === 'string' ? parseInt(t.customerId) : t.customerId;
+        return tCustId === numId;
+      }).filter(t => !t.completed).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+      
+      const totalSpent = customerOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+      const score = calculateCustomerScore(customer);
+      
+      document.getElementById('customerDetailName').textContent = customer.name;
+      
+      const content = document.getElementById('customerDetailContent');
+      content.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px;">
+          <!-- Left Column: Customer Info -->
+          <div>
+            <div class="card">
+              <h4 style="color: #2e5940; margin-bottom: 15px;">Customer Information</h4>
+              <div style="margin-bottom: 10px;">
+                <strong style="color: #666;">Email:</strong><br>${customer.email}
+              </div>
+              ${customer.phone ? `
+                <div style="margin-bottom: 10px;">
+                  <strong style="color: #666;">Phone:</strong><br>${customer.phone}
+                </div>
+              ` : ''}
+              <div style="margin-bottom: 10px;">
+                <strong style="color: #666;">Status:</strong><br>
+                <span class="status-badge status-${customer.status}">${customer.status}</span>
+              </div>
+              <div style="margin-bottom: 10px;">
+                <strong style="color: #666;">AI Score:</strong><br>
+                <span class="score-badge ${getScoreClass(score)}">${score} - ${getScoreLabel(score)}</span>
+              </div>
+              ${customer.leadSource ? `
+                <div style="margin-bottom: 10px;">
+                  <strong style="color: #666;">Lead Source:</strong><br>${customer.leadSource}
+                </div>
+              ` : ''}
+              <div style="margin-top: 20px;">
+                <button class="btn-primary" onclick="editCustomer(${customer.id})" style="width: 100%; margin-bottom: 10px;">
+                  <i class="fas fa-edit"></i> Edit Customer
+                </button>
+                <button class="btn-info" onclick="viewReferralInfo(${customer.id})" style="width: 100%;">
+                  <i class="fas fa-gift"></i> Referral Dashboard
+                </button>
+              </div>
+            </div>
+
+            <!-- Open Tasks -->
+            ${customerTasks.length > 0 ? `
+              <div class="card" style="margin-top: 20px;">
+                <h4 style="color: #2e5940; margin-bottom: 15px;">
+                  <i class="fas fa-tasks"></i> Open Tasks (${customerTasks.length})
+                </h4>
+                ${customerTasks.map(t => {
+                  const isOverdue = t.dueDate < new Date().toISOString().split('T')[0];
+                  return `
+                    <div style="padding: 10px; border-bottom: 1px solid #e8f5e9; cursor: pointer;" onclick="openTaskModal(${t.id})">
+                      <div style="font-weight: 600; color: #2e5940;">${t.title}</div>
+                      <div style="font-size: 12px; color: #666;">
+                        Due: ${new Date(t.dueDate).toLocaleDateString()}
+                        ${isOverdue ? '<span class="overdue-badge">OVERDUE</span>' : ''}
+                      </div>
+                      <span class="status-badge priority-${t.priority}">${t.priority}</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Right Column: Communications & Orders -->
+          <div>
+            <!-- Purchase History -->
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="color: #2e5940; margin: 0;">
+                  <i class="fas fa-shopping-cart"></i> Purchase History
+                </h4>
+                <button class="btn-primary" onclick="closeModal('customerDetailModal'); openOrderModal();">
+                  <i class="fas fa-plus"></i> New Order
+                </button>
+              </div>
+              
+              ${customerOrders.length > 0 ? `
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                  <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
+                    <div style="font-size: 12px; color: #2e7d32;">Total Orders</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #2e7d32;">${customerOrders.length}</div>
+                  </div>
+                  <div style="background: #fff9c4; padding: 15px; border-radius: 8px;">
+                    <div style="font-size: 12px; color: #f57f17;">Total Spent</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #f57f17;">$${totalSpent.toFixed(0)}</div>
+                  </div>
+                  <div style="background: #e3f2fd; padding: 15px; border-radius: 8px;">
+                    <div style="font-size: 12px; color: #1565c0;">Avg Order</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #1565c0;">$${(totalSpent / customerOrders.length).toFixed(0)}</div>
+                  </div>
+                </div>
+                
+                <div style="max-height: 300px; overflow-y: auto;">
+                  ${customerOrders.map(o => `
+                    <div style="padding: 12px; border-bottom: 1px solid #e8f5e9; cursor: pointer;" onclick="viewOrder('${o.id}')">
+                      <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                          <div style="font-weight: 600; color: #2e5940;">${o.product}</div>
+                          <div style="font-size: 12px; color: #666;">Order #${o.id}</div>
+                          <div style="font-size: 12px; color: #666;">${new Date(o.date).toLocaleDateString()}</div>
+                        </div>
+                        <div style="text-align: right;">
+                          <div style="font-weight: 700; color: #43a047; font-size: 18px;">$${o.total.toFixed(2)}</div>
+                          <span class="status-badge status-${o.status}">${o.status}</span>
+                        </div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : `
+                <p style="text-align: center; color: #999; padding: 40px;">No orders yet. Create the first order!</p>
+              `}
+            </div>
+
+            <!-- Communication History -->
+            <div class="card" style="margin-top: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="color: #2e5940; margin: 0;">
+                  <i class="fas fa-comments"></i> Communication History
+                </h4>
+                <button class="btn-primary" onclick="openCommunicationModal(${customer.id})">
+                  <i class="fas fa-plus"></i> Log Communication
+                </button>
+              </div>
+              
+              ${customerComms.length > 0 ? `
+                <div class="timeline">
+                  ${customerComms.map(c => `
+                    <div class="timeline-item">
+                      <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 5px;">
+                        <span class="communication-badge comm-${c.type}">
+                          <i class="fas fa-${c.type === 'call' ? 'phone' : c.type === 'email' ? 'envelope' : c.type === 'meeting' ? 'handshake' : c.type === 'sms' ? 'sms' : 'sticky-note'}"></i>
+                          ${c.type.toUpperCase()}
+                        </span>
+                        <span style="font-size: 12px; color: #999; margin-left: 10px;">
+                          ${new Date(c.dateTime).toLocaleString()}
+                        </span>
+                      </div>
+                      <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${c.subject}</div>
+                      <div style="font-size: 13px; color: #666; margin-bottom: 5px;">${c.notes}</div>
+                      ${c.outcome ? `<div style="font-size: 12px; color: #43a047;"><strong>Outcome:</strong> ${c.outcome}</div>` : ''}
+                      <button class="btn-danger" onclick="deleteCommunication(${c.id})" style="margin-top: 5px; padding: 4px 8px; font-size: 11px;">
+                        <i class="fas fa-trash"></i> Delete
+                      </button>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : `
+                <p style="text-align: center; color: #999; padding: 40px;">No communications logged yet. Start tracking your interactions!</p>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('customerDetailModal').style.display = 'block';
+    }
+
+    // ============================================
+    // END PHASE 1 NEW FEATURES
+    // ============================================
 
     // Dashboard with AI Insights
     function renderDashboard() {
@@ -1622,16 +2401,15 @@
       const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
       document.getElementById('totalRevenue').textContent = '$' + totalRevenue.toLocaleString();
       
-      // Referral rate calculation
-      const willingToRefer = customers.filter(c => c.referralInterest === 'Yes').length;
-      const referralRate = customers.length > 0 ? Math.round((willingToRefer / customers.length) * 100) : 0;
-      document.getElementById('referralRate').textContent = referralRate + '%';
+      // Update pending tasks count
+      const today = new Date().toISOString().split('T')[0];
+      const pendingTasks = tasks.filter(t => !t.completed).length;
+      document.getElementById('pendingTasks').textContent = pendingTasks;
       
       // AI Insights
       const insights = document.getElementById('aiInsights');
       let insightsHTML = '';
       
-      // Most common lead source
       const leadSources = {};
       customers.forEach(c => {
         if (c.leadSource) {
@@ -1648,7 +2426,6 @@
         `;
       }
       
-      // High-value customers
       const highValueCustomers = customers.filter(c => calculateCustomerScore(c) >= 75).length;
       if (highValueCustomers > 0) {
         insightsHTML += `
@@ -1659,44 +2436,53 @@
         `;
       }
       
-      // Social media opportunity
-      const socialCustomers = customers.filter(c => c.socialPlatforms && c.socialPlatforms.length > 0).length;
-      if (socialCustomers > 0) {
+      const overdueTasks = tasks.filter(t => !t.completed && t.dueDate < today).length;
+      if (overdueTasks > 0) {
         insightsHTML += `
-          <div style="padding: 12px; background: #f3e5f5; border-left: 4px solid #ab47bc; border-radius: 6px; margin-bottom: 10px;">
-            <strong><i class="fas fa-hashtag"></i> Social Media Reach:</strong> ${socialCustomers} customers active on social
-            <br><small>📱 Great opportunity for user-generated content!</small>
+          <div style="padding: 12px; background: #ffcdd2; border-left: 4px solid #e53935; border-radius: 6px; margin-bottom: 10px;">
+            <strong><i class="fas fa-exclamation-triangle"></i> Overdue Tasks:</strong> ${overdueTasks} tasks need attention
+            <br><small>⚠️ Click Tasks & Reminders to review</small>
           </div>
         `;
       }
       
       insights.innerHTML = insightsHTML || '<p style="color: #999; text-align: center;">Add more customers to see AI-powered insights!</p>';
       
-      // Today's Tasks
+      // Today's Priority Tasks
       const todayTasks = document.getElementById('todayTasks');
-      const todayEvents = events.filter(e => e.date === new Date().toISOString().split('T')[0]);
-      if (todayEvents.length > 0) {
-        todayTasks.innerHTML = todayEvents.map(e => {
-          const customer = e.customerId ? customers.find(c => {
+      const priorityTasks = tasks.filter(t => !t.completed && (t.dueDate === today || t.dueDate < today))
+        .sort((a, b) => {
+          const priorityOrder = { high: 0, medium: 1, low: 2 };
+          return priorityOrder[a.priority] - priorityOrder[b.priority];
+        })
+        .slice(0, 5);
+      
+      if (priorityTasks.length > 0) {
+        todayTasks.innerHTML = priorityTasks.map(t => {
+          const customer = t.customerId ? customers.find(c => {
             const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
-            const eventCustId = typeof e.customerId === 'string' ? parseInt(e.customerId) : e.customerId;
-            return cId === eventCustId;
+            const taskCustId = typeof t.customerId === 'string' ? parseInt(t.customerId) : t.customerId;
+            return cId === taskCustId;
           }) : null;
+          const isOverdue = t.dueDate < today;
           
           return `
-          <div style="padding: 10px; border-bottom: 1px solid #e8f5e9; cursor: pointer;" onclick="viewEventDetail('${e.id}')">
-            <div style="font-weight: 600; color: #2e5940;">${e.title}</div>
-            <div style="font-size: 12px; color: #666;">${e.time || 'All day'} - ${e.type}</div>
-            ${customer ? `<div style="font-size: 11px; color: #999;">${customer.name}</div>` : ''}
-          </div>
-        `;
+            <div style="padding: 10px; border-bottom: 1px solid #e8f5e9; cursor: pointer;" onclick="openTaskModal(${t.id})">
+              <div style="font-weight: 600; color: #2e5940;">${t.title}</div>
+              <div style="font-size: 12px; color: #666;">
+                ${customer ? customer.name : 'No customer'} • ${new Date(t.dueDate).toLocaleDateString()}
+                ${isOverdue ? '<span class="overdue-badge">OVERDUE</span>' : ''}
+              </div>
+              <span class="status-badge priority-${t.priority}">${t.priority}</span>
+            </div>
+          `;
         }).join('');
       } else {
-        todayTasks.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No tasks for today</p>';
+        todayTasks.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No urgent tasks</p>';
       }
     }
 
-    // Customers with AI Scoring
+    // Customers Rendering
     function renderCustomers() {
       const tbody = document.getElementById('customersTableBody');
       if (customers.length === 0) {
@@ -1707,7 +2493,7 @@
       tbody.innerHTML = customers.map(c => {
         const score = calculateCustomerScore(c);
         return `
-          <tr>
+          <tr style="cursor: pointer;" onclick="viewCustomerDetail(${c.id})">
             <td>${c.name}</td>
             <td>${c.email}</td>
             <td>${c.leadSource || 'N/A'}</td>
@@ -1717,7 +2503,7 @@
                 ${score} - ${getScoreLabel(score)}
               </span>
             </td>
-            <td>
+            <td onclick="event.stopPropagation()">
               <button class="btn-secondary" onclick="viewReferralInfo(${c.id})" style="margin-right: 5px;" title="View Referral Dashboard">
                 <i class="fas fa-gift"></i>
               </button>
@@ -1747,7 +2533,6 @@
       document.getElementById('customerModal').style.display = 'block';
       
       if (id) {
-        // Convert to number for consistent comparison
         const numId = typeof id === 'string' ? parseInt(id) : id;
         const customer = customers.find(c => {
           const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
@@ -1772,7 +2557,6 @@
         document.getElementById('customerLeadSource').value = customer.leadSource || '';
         document.getElementById('customerReferrer').value = customer.referrer || '';
         
-        // Social media checkboxes
         const platforms = customer.socialPlatforms || [];
         document.getElementById('socialFacebook').checked = platforms.includes('Facebook');
         document.getElementById('socialInstagram').checked = platforms.includes('Instagram');
@@ -1787,7 +2571,6 @@
         document.getElementById('customerPlayFrequency').value = customer.playFrequency || '';
         document.getElementById('customerPaddleBrand').value = customer.paddleBrand || '';
         
-        // Product interests checkboxes
         const interests = customer.productInterests || [];
         document.getElementById('interestNoise').checked = interests.includes('Noise Reduction');
         document.getElementById('interestPerformance').checked = interests.includes('Performance');
@@ -1813,7 +2596,6 @@
     function saveCustomer(e) {
       e.preventDefault();
       
-      // Collect social platforms
       const socialPlatforms = [];
       if (document.getElementById('socialFacebook').checked) socialPlatforms.push('Facebook');
       if (document.getElementById('socialInstagram').checked) socialPlatforms.push('Instagram');
@@ -1822,7 +2604,6 @@
       if (document.getElementById('socialYouTube').checked) socialPlatforms.push('YouTube');
       if (document.getElementById('socialLinkedIn').checked) socialPlatforms.push('LinkedIn');
       
-      // Collect product interests
       const productInterests = [];
       if (document.getElementById('interestNoise').checked) productInterests.push('Noise Reduction');
       if (document.getElementById('interestPerformance').checked) productInterests.push('Performance');
@@ -1867,14 +2648,12 @@
         })?.createdAt || new Date().toISOString()) : new Date().toISOString()
       };
       
-      // Generate referral code if new customer
       if (!editingCustomerId) {
         customer.referralCode = generateReferralCode(customer.name);
         customer.referralsMade = 0;
         customer.referredCustomers = [];
         customer.referralCredits = 0;
       } else {
-        // Preserve existing referral data
         const existingCustomer = customers.find(c => {
           const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
           const targetId = typeof editingCustomerId === 'string' ? parseInt(editingCustomerId) : editingCustomerId;
@@ -1888,7 +2667,6 @@
         }
       }
       
-      // Track referral if referred by someone
       if (customer.referrer && !editingCustomerId) {
         const referrer = customers.find(c => 
           c.name.toLowerCase().includes(customer.referrer.toLowerCase()) ||
@@ -1900,7 +2678,6 @@
       }
       
       if (editingCustomerId) {
-        // Convert to number for consistent comparison
         const numId = typeof editingCustomerId === 'string' ? parseInt(editingCustomerId) : editingCustomerId;
         const index = customers.findIndex(c => {
           const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
@@ -1924,14 +2701,12 @@
     }
 
     function editCustomer(id) {
-      // Convert to number for consistent comparison
       const numId = typeof id === 'string' ? parseInt(id) : id;
       openCustomerModal(numId);
     }
 
     function deleteCustomer(id) {
       if (confirm('Are you sure you want to delete this customer? This will also delete all their orders.')) {
-        // Convert to number for consistent comparison
         const numId = typeof id === 'string' ? parseInt(id) : id;
         
         customers = customers.filter(c => {
@@ -1953,7 +2728,7 @@
       }
     }
 
-    // Orders (same as before)
+    // Orders
     function renderOrders() {
       const tbody = document.getElementById('ordersTableBody');
       if (orders.length === 0) {
@@ -2001,6 +2776,10 @@
       
       const eventSelect = document.getElementById('eventCustomer');
       eventSelect.innerHTML = '<option value="">None</option>' + 
+        customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      
+      const taskSelect = document.getElementById('taskCustomer');
+      taskSelect.innerHTML = '<option value="">None</option>' + 
         customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     }
 
@@ -2093,7 +2872,6 @@
 
     function deleteOrder(id) {
       if (confirm('Are you sure you want to delete this order?')) {
-        // Order IDs are strings like 'ORD-123456789', so use string comparison
         orders = orders.filter(o => o.id !== id);
         saveData();
         renderOrders();
@@ -2102,7 +2880,7 @@
       }
     }
 
-    // Calendar with Dynamic Holidays
+    // Calendar
     function renderCalendar() {
       const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
@@ -2113,7 +2891,6 @@
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
       const today = new Date();
       
-      // Get holidays for the current year being displayed
       const yearHolidays = getUSHolidays(currentYear);
       
       const grid = document.getElementById('calendarGrid');
@@ -2136,6 +2913,7 @@
         if (isToday) cell.classList.add('today');
         
         const dayEvents = events.filter(e => e.date === dateStr);
+        const dayTasks = tasks.filter(t => !t.completed && t.dueDate === dateStr);
         const holiday = yearHolidays[dateStr];
         
         let html = `<div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${day}</div>`;
@@ -2147,6 +2925,12 @@
         html += dayEvents.map(e => `
           <div class="event-item" onclick="event.stopPropagation(); viewEventDetail('${e.id}')" title="${e.title}">
             ${e.time || ''} ${e.title.substring(0, 15)}${e.title.length > 15 ? '...' : ''}
+          </div>
+        `).join('');
+        
+        html += dayTasks.map(t => `
+          <div class="task-item" onclick="event.stopPropagation(); openTaskModal(${t.id})" title="${t.title}">
+            <i class="fas fa-check-square"></i> ${t.title.substring(0, 12)}${t.title.length > 12 ? '...' : ''}
           </div>
         `).join('');
         
@@ -2183,7 +2967,6 @@
       updateOrderCustomerDropdown();
       
       if (id) {
-        // Convert to number for consistent comparison
         const numId = typeof id === 'string' ? parseInt(id) : id;
         const evt = events.find(e => {
           const eId = typeof e.id === 'string' ? parseInt(e.id) : e.id;
@@ -2226,7 +3009,6 @@
       };
       
       if (editingEventId) {
-        // Convert to number for consistent comparison
         const numId = typeof editingEventId === 'string' ? parseInt(editingEventId) : editingEventId;
         const index = events.findIndex(ev => {
           const evId = typeof ev.id === 'string' ? parseInt(ev.id) : ev.id;
@@ -2247,7 +3029,6 @@
     }
 
     function viewEventDetail(id) {
-      // Convert string ID to number for consistent comparison
       const numId = typeof id === 'string' ? parseInt(id) : id;
       const evt = events.find(e => {
         const eId = typeof e.id === 'string' ? parseInt(e.id) : e.id;
@@ -2256,7 +3037,7 @@
       
       if (!evt) return;
       
-      currentEventId = evt.id; // Store the actual ID from the event object
+      currentEventId = evt.id;
       const customer = evt.customerId ? customers.find(c => {
         const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
         const eventCustId = typeof evt.customerId === 'string' ? parseInt(evt.customerId) : evt.customerId;
@@ -2281,7 +3062,6 @@
     function editEventFromDetail() {
       closeModal('eventDetailModal');
       if (currentEventId) {
-        // Convert to number for consistent comparison
         const numId = typeof currentEventId === 'string' ? parseInt(currentEventId) : currentEventId;
         openEventModal(numId);
       }
@@ -2291,7 +3071,6 @@
       if (!currentEventId) return;
       
       if (confirm('Are you sure you want to delete this event?')) {
-        // Convert to number for consistent comparison
         const numId = typeof currentEventId === 'string' ? parseInt(currentEventId) : currentEventId;
         events = events.filter(e => {
           const eId = typeof e.id === 'string' ? parseInt(e.id) : e.id;
@@ -2310,7 +3089,6 @@
       if (!eventId) return;
       
       if (confirm('Are you sure you want to delete this event?')) {
-        // Convert to number for consistent comparison
         const numId = typeof eventId === 'string' ? parseInt(eventId) : eventId;
         events = events.filter(e => {
           const eId = typeof e.id === 'string' ? parseInt(e.id) : e.id;
@@ -2327,7 +3105,6 @@
 
     // Marketing Intelligence
     function renderMarketing() {
-      // Lead Sources Chart
       const leadSourceCtx = document.getElementById('leadSourceChart');
       if (leadSourceCtx && leadSourceCtx.getContext) {
         const leadSources = {};
@@ -2353,7 +3130,6 @@
         });
       }
       
-      // Social Media Chart
       const socialCtx = document.getElementById('socialMediaChart');
       if (socialCtx && socialCtx.getContext) {
         const socialCounts = {
@@ -2385,7 +3161,6 @@
         });
       }
       
-      // Referral Insights
       const referralInsights = document.getElementById('referralInsights');
       const willingToRefer = customers.filter(c => c.referralInterest === 'Yes').length;
       const totalReferrals = customers.reduce((sum, c) => sum + (c.potentialReferrals || 0), 0);
@@ -2403,7 +3178,6 @@
         </div>
       `;
       
-      // Discount Insights
       const discountInsights = document.getElementById('discountInsights');
       const wantDiscounts = customers.filter(c => c.discountInterest === 'Yes').length;
       const percentage = customers.length > 0 ? Math.round((wantDiscounts / customers.length) * 100) : 0;
@@ -2469,24 +3243,168 @@
       }
     }
 
-    // Referral System Functions
+    // Pipeline View (Sales Pipeline Visualization)
+    function renderPipeline() {
+      const content = document.getElementById('pipelineContent');
+      
+      // Group customers by status for pipeline stages
+      const prospects = customers.filter(c => c.status === 'prospect');
+      const activeCustomers = customers.filter(c => c.status === 'active');
+      const inactiveCustomers = customers.filter(c => c.status === 'inactive');
+      
+      // Calculate pipeline metrics
+      const prospectValue = prospects.length * 50; // Estimated $50 per prospect
+      const activeValue = orders.filter(o => {
+        const customer = customers.find(c => {
+          const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+          const orderCustId = typeof o.customerId === 'string' ? parseInt(o.customerId) : o.customerId;
+          return cId === orderCustId && c.status === 'active';
+        });
+        return customer;
+      }).reduce((sum, o) => sum + (o.total || 0), 0);
+      
+      content.innerHTML = `
+        <div style="margin-bottom: 30px;">
+          <h3 style="color: #2e5940; margin-bottom: 20px;">Sales Pipeline Overview</h3>
+          
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
+            <div class="card" style="background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%); color: white; cursor: pointer;" onclick="alert('Prospects are potential customers who haven\\'t made a purchase yet.')">
+              <div style="font-size: 14px; opacity: 0.9;">🎯 Prospects</div>
+              <div style="font-size: 36px; font-weight: 700; margin: 10px 0;">${prospects.length}</div>
+              <div style="font-size: 12px; opacity: 0.8;">Est. Value: $${prospectValue.toLocaleString()}</div>
+              <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3);">
+                <div style="font-size: 11px; opacity: 0.9;">Conversion Rate</div>
+                <div style="font-size: 18px; font-weight: 600;">
+                  ${customers.length > 0 ? Math.round((activeCustomers.length / customers.length) * 100) : 0}%
+                </div>
+              </div>
+            </div>
+            
+            <div class="card" style="background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); color: white; cursor: pointer;" onclick="alert('Active customers have made at least one purchase.')">
+              <div style="font-size: 14px; opacity: 0.9;">✅ Active Customers</div>
+              <div style="font-size: 36px; font-weight: 700; margin: 10px 0;">${activeCustomers.length}</div>
+              <div style="font-size: 12px; opacity: 0.8;">Total Value: $${activeValue.toLocaleString()}</div>
+              <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3);">
+                <div style="font-size: 11px; opacity: 0.9;">Avg Customer Value</div>
+                <div style="font-size: 18px; font-weight: 600;">
+                  $${activeCustomers.length > 0 ? Math.round(activeValue / activeCustomers.length) : 0}
+                </div>
+              </div>
+            </div>
+            
+            <div class="card" style="background: linear-gradient(135deg, #ef5350 0%, #c62828 100%); color: white; cursor: pointer;" onclick="alert('Inactive customers haven\\'t purchased recently. Time to re-engage!')">
+              <div style="font-size: 14px; opacity: 0.9;">⚠️ Inactive</div>
+              <div style="font-size: 36px; font-weight: 700; margin: 10px 0;">${inactiveCustomers.length}</div>
+              <div style="font-size: 12px; opacity: 0.8;">Need Re-engagement</div>
+              <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3);">
+                <div style="font-size: 11px; opacity: 0.9;">Recovery Opportunity</div>
+                <div style="font-size: 18px; font-weight: 600;">
+                  ${inactiveCustomers.length} customers
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h4 style="color: #2e5940; margin-bottom: 15px;">Pipeline Stages</h4>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <!-- Prospects Column -->
+            <div>
+              <div style="background: #e3f2fd; padding: 10px; border-radius: 8px 8px 0 0; text-align: center; font-weight: 600; color: #1565c0;">
+                <i class="fas fa-user-plus"></i> Prospects (${prospects.length})
+              </div>
+              <div style="border: 2px solid #e3f2fd; border-top: none; border-radius: 0 0 8px 8px; padding: 10px; min-height: 200px; max-height: 400px; overflow-y: auto;">
+                ${prospects.length > 0 ? prospects.map(c => {
+                  const score = calculateCustomerScore(c);
+                  return `
+                    <div style="background: white; border: 1px solid #e8f5e9; padding: 10px; margin-bottom: 8px; border-radius: 6px; cursor: pointer;" onclick="viewCustomerDetail(${c.id})">
+                      <div style="font-weight: 600; color: #2e5940; font-size: 13px;">${c.name}</div>
+                      <div style="font-size: 11px; color: #666;">${c.email}</div>
+                      <div style="margin-top: 5px;">
+                        <span class="score-badge ${getScoreClass(score)}" style="font-size: 10px; padding: 2px 6px;">${score}</span>
+                        <span style="font-size: 10px; color: #666; margin-left: 5px;">${c.leadSource || 'N/A'}</span>
+                      </div>
+                    </div>
+                  `;
+                }).join('') : '<p style="text-align: center; color: #999; padding: 20px; font-size: 12px;">No prospects yet</p>'}
+              </div>
+            </div>
+            
+            <!-- Active Customers Column -->
+            <div>
+              <div style="background: #c8e6c9; padding: 10px; border-radius: 8px 8px 0 0; text-align: center; font-weight: 600; color: #2e7d32;">
+                <i class="fas fa-check-circle"></i> Active (${activeCustomers.length})
+              </div>
+              <div style="border: 2px solid #c8e6c9; border-top: none; border-radius: 0 0 8px 8px; padding: 10px; min-height: 200px; max-height: 400px; overflow-y: auto;">
+                ${activeCustomers.length > 0 ? activeCustomers.map(c => {
+                  const customerOrders = orders.filter(o => {
+                    const oCustId = typeof o.customerId === 'string' ? parseInt(o.customerId) : o.customerId;
+                    const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+                    return oCustId === cId;
+                  });
+                  const totalSpent = customerOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+                  return `
+                    <div style="background: white; border: 1px solid #e8f5e9; padding: 10px; margin-bottom: 8px; border-radius: 6px; cursor: pointer;" onclick="viewCustomerDetail(${c.id})">
+                      <div style="font-weight: 600; color: #2e5940; font-size: 13px;">${c.name}</div>
+                      <div style="font-size: 11px; color: #666;">${customerOrders.length} orders • $${totalSpent.toFixed(0)}</div>
+                      <div style="margin-top: 5px;">
+                        <span style="font-size: 10px; background: #c8e6c9; color: #2e7d32; padding: 2px 6px; border-radius: 4px;">Active</span>
+                      </div>
+                    </div>
+                  `;
+                }).join('') : '<p style="text-align: center; color: #999; padding: 20px; font-size: 12px;">No active customers yet</p>'}
+              </div>
+            </div>
+            
+            <!-- Inactive Customers Column -->
+            <div>
+              <div style="background: #ffcdd2; padding: 10px; border-radius: 8px 8px 0 0; text-align: center; font-weight: 600; color: #c62828;">
+                <i class="fas fa-exclamation-triangle"></i> Inactive (${inactiveCustomers.length})
+              </div>
+              <div style="border: 2px solid #ffcdd2; border-top: none; border-radius: 0 0 8px 8px; padding: 10px; min-height: 200px; max-height: 400px; overflow-y: auto;">
+                ${inactiveCustomers.length > 0 ? inactiveCustomers.map(c => `
+                  <div style="background: white; border: 1px solid #e8f5e9; padding: 10px; margin-bottom: 8px; border-radius: 6px; cursor: pointer;" onclick="viewCustomerDetail(${c.id})">
+                    <div style="font-weight: 600; color: #2e5940; font-size: 13px;">${c.name}</div>
+                    <div style="font-size: 11px; color: #666;">${c.email}</div>
+                    <div style="margin-top: 5px;">
+                      <button class="btn-primary" onclick="event.stopPropagation(); openCommunicationModal(${c.id})" style="font-size: 10px; padding: 4px 8px;">
+                        <i class="fas fa-phone"></i> Re-engage
+                      </button>
+                    </div>
+                  </div>
+                `).join('') : '<p style="text-align: center; color: #999; padding: 20px; font-size: 12px;">No inactive customers</p>'}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="info-box" style="margin-top: 20px;">
+          <strong><i class="fas fa-lightbulb"></i> Pipeline Tips:</strong>
+          <ul style="margin: 10px 0 0 20px; font-size: 13px;">
+            <li>Click any customer card to view their complete profile</li>
+            <li>Move prospects to active by creating their first order</li>
+            <li>Re-engage inactive customers with targeted communications</li>
+            <li>Focus on high-score prospects for best conversion rates</li>
+          </ul>
+        </div>
+      `;
+    }
+
+    // Referral System
     function renderReferrals() {
-      // Calculate stats
       const totalReferrals = customers.reduce((sum, c) => sum + (c.referralsMade || 0), 0);
       const totalCredits = totalReferrals * REFERRAL_CREDIT_AMOUNT;
       const activeAdvocates = customers.filter(c => (c.referralsMade || 0) > 0).length;
       
-      // Calculate conversion rate
       const referredCustomers = customers.filter(c => c.referrer).length;
       const conversionRate = referredCustomers > 0 ? Math.round((referredCustomers / customers.length) * 100) : 0;
       
-      // Update stats
       document.getElementById('totalReferrals').textContent = totalReferrals;
       document.getElementById('totalCredits').textContent = '$' + totalCredits.toLocaleString();
       document.getElementById('activeAdvocates').textContent = activeAdvocates;
       document.getElementById('conversionRate').textContent = conversionRate + '%';
       
-      // Top Referrers Leaderboard
       const topReferrers = [...customers]
         .filter(c => (c.referralsMade || 0) > 0)
         .sort((a, b) => (b.referralsMade || 0) - (a.referralsMade || 0))
@@ -2521,7 +3439,6 @@
         leaderboard.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No referrals yet. Start rewarding your advocates!</p>';
       }
       
-      // Recent Referrals Table
       const recentReferrals = [];
       customers.forEach(referrer => {
         if (referrer.referredCustomers && referrer.referredCustomers.length > 0) {
@@ -2578,7 +3495,6 @@
       
       const content = document.getElementById('referralDetailsContent');
       
-      // Clear any existing QR code
       const existingQR = document.getElementById('qrcode');
       if (existingQR) existingQR.innerHTML = '';
       
@@ -2684,7 +3600,6 @@
         </div>
       `;
       
-      // Generate QR Code
       setTimeout(() => {
         const qrDiv = document.getElementById('qrcode');
         if (qrDiv && window.QRCode) {
@@ -2702,7 +3617,6 @@
       document.getElementById('referralModal').style.display = 'block';
     }
 
-    // Copy referral code to clipboard
     function copyReferralCode(code) {
       navigator.clipboard.writeText(code).then(() => {
         showNotification('Referral code copied to clipboard!');
@@ -2711,7 +3625,6 @@
       });
     }
 
-    // Social sharing functions
     function shareViaEmail(code) {
       const subject = encodeURIComponent('Get $15 off AcoustiSkin with my referral code!');
       const body = encodeURIComponent(`Hey! I love my AcoustiSkin paddle cover and thought you might too. Use my referral code "${code}" to get $15 off your first order, and I'll get $15 credit too! Check it out: https://acoustiskin.com/ref/${code}`);
@@ -2744,42 +3657,9 @@
       window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
     }
 
-    // Download referral card
     function downloadReferralCard() {
       if (!currentReferralCustomer) return;
-      
-      // Create a simple referral card as HTML and convert to image
-      const card = document.createElement('div');
-      card.style.cssText = `
-        width: 600px;
-        height: 400px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 40px;
-        font-family: Arial, sans-serif;
-        position: absolute;
-        left: -9999px;
-      `;
-      
-      card.innerHTML = `
-        <div style="text-align: center;">
-          <h1 style="font-size: 48px; margin-bottom: 20px;">AcoustiSkin</h1>
-          <h2 style="font-size: 24px; margin-bottom: 30px;">Referral Reward Card</h2>
-          <div style="background: white; color: #2e5940; padding: 30px; border-radius: 15px; margin: 30px 0;">
-            <p style="font-size: 18px; margin-bottom: 10px;">Your Referral Code:</p>
-            <p style="font-size: 42px; font-weight: bold; font-family: monospace; letter-spacing: 3px;">${currentReferralCustomer.referralCode}</p>
-          </div>
-          <p style="font-size: 18px;">Share this code and get $15 credit!</p>
-          <p style="font-size: 14px; margin-top: 20px; opacity: 0.8;">acoustiskin.com/ref/${currentReferralCustomer.referralCode}</p>
-        </div>
-      `;
-      
-      document.body.appendChild(card);
-      
-      // Use html2canvas if available, otherwise create a simple download
       showNotification('Referral card data prepared! Use screenshot tool to save the QR code.');
-      
-      setTimeout(() => document.body.removeChild(card), 100);
     }
 
     // Utilities
@@ -2787,6 +3667,7 @@
       document.getElementById(modalId).style.display = 'none';
       editingCustomerId = null;
       editingEventId = null;
+      editingTaskId = null;
       currentEventId = null;
     }
 
@@ -2800,5 +3681,6 @@
     // Initialize on load
     window.onload = initApp;
   </script>
+
 </body>
 </html>

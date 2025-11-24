@@ -3694,249 +3694,79 @@ Early access to new designs"></textarea>
       }
     }
 
-    function renderRewardTiers() {
+   function renderRewardTiers() {
       const container = document.getElementById('rewardTiersDisplay');
+      if (!container) return;
+      
       const tiers = referralSettings.tiers;
       
       const tierColors = {
-        bronze: { color: '#cd7f32', bg: '#f5f5f5' },
-        silver: { color: '#808080', bg: '#f5f5f5' },
-        gold: { color: '#b8860b', bg: '#f5f5f5' },
-        platinum: { color: 'white', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }
+        bronze: { color: '#cd7f32', bg: '#f5f5f5', borderColor: '#cd7f32' },
+        silver: { color: '#808080', bg: '#f5f5f5', borderColor: '#c0c0c0' },
+        gold: { color: '#b8860b', bg: '#f5f5f5', borderColor: '#ffd700' },
+        platinum: { color: 'white', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderColor: '#667eea' }
+      };
+      
+      const tierIcons = {
+        bronze: 'medal',
+        silver: 'medal',
+        gold: 'medal',
+        platinum: 'gem'
       };
       
       let html = '';
       
-      Object.keys(tiers).forEach(tierKey => {
-        const tier = tiers[tierKey];
-        const colors = tierColors[tierKey];
-        const isPlatinum = tierKey === 'platinum';
-        const benefits = tier.benefits.split('\n').filter(b => b.trim());
-        
-        html += `
-          <div style="margin-bottom: 15px; padding: 12px; background: ${isPlatinum ? 'transparent' : colors.bg}; ${isPlatinum ? 'background: ' + colors.bg + ';' : ''} border-left: 4px solid ${isPlatinum ? 'transparent' : colors.color}; border-radius: 6px; ${isPlatinum ? 'color: white;' : ''}">
-            <div style="font-weight: 600; color: ${isPlatinum ? 'white' : colors.color};">
-              <i class="fas fa-${tierKey === 'platinum' ? 'gem' : 'medal'}"></i> 
-              ${tierKey.toUpperCase()} (${tier.min}-${tier.max === 999 ? '∞' : tier.max} referrals)
-            </div>
-            <div style="margin-top: 5px;">
-              ${benefits.map(b => `<div style="font-size: 13px; color: ${isPlatinum ? 'white' : '#666'};">• ${b}</div>`).join('')}
-            </div>
+      // Bronze Tier
+      const bronzeBenefits = tiers.bronze.benefits.split('\n').filter(b => b.trim());
+      html += `
+        <div style="margin-bottom: 15px; padding: 12px; background: ${tierColors.bronze.bg}; border-left: 4px solid ${tierColors.bronze.borderColor}; border-radius: 6px;">
+          <div style="font-weight: 600; color: ${tierColors.bronze.color};">
+            <i class="fas fa-${tierIcons.bronze}"></i> BRONZE (${tiers.bronze.min}-${tiers.bronze.max} referrals)
           </div>
-        `;
-      });
-      
-      container.innerHTML = html;
-    }
-
-    function viewReferralInfo(customerId) {
-      const numId = typeof customerId === 'string' ? parseInt(customerId) : customerId;
-      const customer = customers.find(c => {
-        const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
-        return cId === numId;
-      });
-      
-      if (!customer) return;
-      
-      currentReferralCustomer = customer;
-      const referralCount = customer.referralsMade || 0;
-      const credits = calculateReferralCredits(customer.id);
-      const tier = getReferralTier(referralCount);
-      const tierInfo = getTierInfo(tier);
-      
-      const content = document.getElementById('referralDetailsContent');
-      
-      const existingQR = document.getElementById('qrcode');
-      if (existingQR) existingQR.innerHTML = '';
-      
-      content.innerHTML = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-          <div>
-            <h4 style="color: #2e5940; margin-bottom: 15px; font-size: 18px;">${customer.name}'s Referral Dashboard</h4>
-            
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-              <div style="font-size: 14px; opacity: 0.9;">Referral Code</div>
-              <div style="font-size: 32px; font-weight: 700; margin: 10px 0; font-family: monospace; letter-spacing: 2px;">
-                ${customer.referralCode || 'N/A'}
-              </div>
-              <button onclick="copyReferralCode('${customer.referralCode}')" class="btn-secondary" style="width: 100%; margin-top: 10px; color: white; border-color: white;">
-                <i class="fas fa-copy"></i> Copy Code
-              </button>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-              <div style="background: #c8e6c9; padding: 15px; border-radius: 8px;">
-                <div style="font-size: 12px; color: #2e7d32;">Total Referrals</div>
-                <div style="font-size: 28px; font-weight: 700; color: #2e7d32;">${referralCount}</div>
-              </div>
-              <div style="background: #fff9c4; padding: 15px; border-radius: 8px;">
-                <div style="font-size: 12px; color: #f57f17;">Credits Earned</div>
-                <div style="font-size: 28px; font-weight: 700; color: #f57f17;">$${credits}</div>
-              </div>
-            </div>
-            
-            <div style="background: ${tierInfo.color}15; border-left: 4px solid ${tierInfo.color}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-              <div style="font-size: 12px; color: ${tierInfo.color};">Current Tier</div>
-              <div style="font-size: 24px; font-weight: 700; color: ${tierInfo.color};">
-                <i class="fas fa-${tierInfo.icon}"></i> ${tierInfo.name}
-              </div>
-              ${tier !== 'platinum' ? `
-                <div style="font-size: 12px; color: #666; margin-top: 10px;">
-                  ${(() => {
-                    const nextTierKey = tier === 'none' ? 'bronze' : tier === 'bronze' ? 'silver' : tier === 'silver' ? 'gold' : 'platinum';
-                    const nextTierMin = referralSettings.tiers[nextTierKey].min;
-                    const remaining = nextTierMin - referralCount;
-                    return remaining > 0 ? `${remaining} more referrals to next tier!` : 'Congratulations on reaching the next tier!';
-                  })()}
-                </div>
-              ` : '<div style="font-size: 12px; color: #666; margin-top: 10px;">🎉 You\'ve reached the highest tier!</div>'}
-            </div>
-            
-            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px;">
-              <h5 style="color: #2e5940; margin-bottom: 10px;">Share Your Code</h5>
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                <button onclick="shareViaEmail('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
-                  <i class="fas fa-envelope"></i> Email
-                </button>
-                <button onclick="shareViaSMS('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
-                  <i class="fas fa-sms"></i> SMS
-                </button>
-                <button onclick="shareViaFacebook('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
-                  <i class="fab fa-facebook"></i> Facebook
-                </button>
-                <button onclick="shareViaTwitter('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
-                  <i class="fab fa-twitter"></i> Twitter
-                </button>
-                <button onclick="shareViaWhatsApp('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
-                  <i class="fab fa-whatsapp"></i> WhatsApp
-                </button>
-                <button onclick="shareViaLinkedIn('${customer.referralCode}')" class="btn-secondary" style="font-size: 12px;">
-                  <i class="fab fa-linkedin"></i> LinkedIn
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <h4 style="color: #2e5940; margin-bottom: 15px; font-size: 18px;">QR Code</h4>
-            <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; border: 2px solid #e8f5e9;">
-              <div id="qrcode" style="display: flex; justify-content: center; margin-bottom: 15px;"></div>
-              <p style="font-size: 14px; color: #666; margin-top: 10px;">Scan to apply referral code</p>
-            </div>
-            
-            <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 20px;">
-              <h5 style="color: #1565c0; margin-bottom: 10px;"><i class="fas fa-info-circle"></i> How It Works</h5>
-              <ol style="font-size: 13px; color: #666; padding-left: 20px; margin: 0;">
-                <li style="margin-bottom: 8px;">Share your referral code with friends</li>
-                <li style="margin-bottom: 8px;">They use your code at checkout</li>
-                <li style="margin-bottom: 8px;">You both get $15 credit!</li>
-                <li>Climb tiers for bigger rewards</li>
-              </ol>
-            </div>
-            
-            ${referralCount > 0 ? `
-              <div style="background: #fff; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #e8f5e9;">
-                <h5 style="color: #2e5940; margin-bottom: 10px;">Your Referrals</h5>
-                ${(customer.referredCustomers || []).map(ref => {
-                  const refCustomer = customers.find(c => {
-                    const cId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
-                    const refId = typeof ref.customerId === 'string' ? parseInt(ref.customerId) : ref.customerId;
-                    return cId === refId;
-                  });
-                  return `
-                    <div style="padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 13px;">
-                      <strong>${refCustomer ? refCustomer.name : 'Customer'}</strong><br>
-                      <span style="color: #666;">${new Date(ref.date).toLocaleDateString()} • $${ref.creditEarned} earned</span>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            ` : ''}
+          <div style="margin-top: 5px;">
+            ${bronzeBenefits.map(b => `<div style="font-size: 13px; color: #666;">• ${b}</div>`).join('')}
           </div>
         </div>
       `;
       
-      setTimeout(() => {
-        const qrDiv = document.getElementById('qrcode');
-        if (qrDiv && window.QRCode) {
-          new QRCode(qrDiv, {
-            text: `ACOUSTISKIN-REF:${customer.referralCode}`,
-            width: 200,
-            height: 200,
-            colorDark: "#2e5940",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-          });
-        }
-      }, 100);
+      // Silver Tier
+      const silverBenefits = tiers.silver.benefits.split('\n').filter(b => b.trim());
+      html += `
+        <div style="margin-bottom: 15px; padding: 12px; background: ${tierColors.silver.bg}; border-left: 4px solid ${tierColors.silver.borderColor}; border-radius: 6px;">
+          <div style="font-weight: 600; color: ${tierColors.silver.color};">
+            <i class="fas fa-${tierIcons.silver}"></i> SILVER (${tiers.silver.min}-${tiers.silver.max} referrals)
+          </div>
+          <div style="margin-top: 5px;">
+            ${silverBenefits.map(b => `<div style="font-size: 13px; color: #666;">• ${b}</div>`).join('')}
+          </div>
+        </div>
+      `;
       
-      document.getElementById('referralModal').style.display = 'block';
+      // Gold Tier
+      const goldBenefits = tiers.gold.benefits.split('\n').filter(b => b.trim());
+      html += `
+        <div style="margin-bottom: 15px; padding: 12px; background: ${tierColors.gold.bg}; border-left: 4px solid ${tierColors.gold.borderColor}; border-radius: 6px;">
+          <div style="font-weight: 600; color: ${tierColors.gold.color};">
+            <i class="fas fa-${tierIcons.gold}"></i> GOLD (${tiers.gold.min}-${tiers.gold.max} referrals)
+          </div>
+          <div style="margin-top: 5px;">
+            ${goldBenefits.map(b => `<div style="font-size: 13px; color: #666;">• ${b}</div>`).join('')}
+          </div>
+        </div>
+      `;
+      
+      // Platinum Tier
+      const platinumBenefits = tiers.platinum.benefits.split('\n').filter(b => b.trim());
+      html += `
+        <div style="padding: 12px; background: ${tierColors.platinum.bg}; color: white; border-radius: 6px;">
+          <div style="font-weight: 600;">
+            <i class="fas fa-${tierIcons.platinum}"></i> PLATINUM (${tiers.platinum.min}+ referrals)
+          </div>
+          <div style="margin-top: 5px;">
+            ${platinumBenefits.map(b => `<div style="font-size: 13px;">• ${b}</div>`).join('')}
+          </div>
+        </div>
+      `;
+      
+      container.innerHTML = html;
     }
-
-    function copyReferralCode(code) {
-      navigator.clipboard.writeText(code).then(() => {
-        showNotification('Referral code copied to clipboard!');
-      }).catch(() => {
-        showNotification('Could not copy code');
-      });
-    }
-
-    function shareViaEmail(code) {
-      const subject = encodeURIComponent('Get $15 off AcoustiSkin with my referral code!');
-      const body = encodeURIComponent(`Hey! I love my AcoustiSkin paddle cover and thought you might too. Use my referral code "${code}" to get $15 off your first order, and I'll get $15 credit too! Check it out: https://acoustiskin.com/ref/${code}`);
-      window.open(`mailto:?subject=${subject}&body=${body}`);
-    }
-
-    function shareViaSMS(code) {
-      const message = encodeURIComponent(`Get $15 off AcoustiSkin! Use my code: ${code} at https://acoustiskin.com/ref/${code}`);
-      window.open(`sms:?body=${message}`);
-    }
-
-    function shareViaFacebook(code) {
-      const url = encodeURIComponent(`https://acoustiskin.com/ref/${code}`);
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
-    }
-
-    function shareViaTwitter(code) {
-      const text = encodeURIComponent(`Love my AcoustiSkin! Get $15 off with code: ${code}`);
-      const url = encodeURIComponent(`https://acoustiskin.com/ref/${code}`);
-      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-    }
-
-    function shareViaWhatsApp(code) {
-      const text = encodeURIComponent(`Get $15 off AcoustiSkin with my code: ${code}! https://acoustiskin.com/ref/${code}`);
-      window.open(`https://wa.me/?text=${text}`, '_blank');
-    }
-
-    function shareViaLinkedIn(code) {
-      const url = encodeURIComponent(`https://acoustiskin.com/ref/${code}`);
-      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
-    }
-
-    function downloadReferralCard() {
-      if (!currentReferralCustomer) return;
-      showNotification('Referral card data prepared! Use screenshot tool to save the QR code.');
-    }
-
-    // Utilities
-    function closeModal(modalId) {
-      document.getElementById(modalId).style.display = 'none';
-      editingCustomerId = null;
-      editingEventId = null;
-      editingTaskId = null;
-      currentEventId = null;
-    }
-
-    function showNotification(message) {
-      const notif = document.getElementById('notification');
-      document.getElementById('notificationText').textContent = message;
-      notif.style.display = 'block';
-      setTimeout(() => notif.style.display = 'none', 3000);
-    }
-
-    // Initialize on load
-    window.onload = initApp;
-  </script>
-
-</body>
-</html>
